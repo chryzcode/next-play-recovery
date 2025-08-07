@@ -248,7 +248,7 @@ export default function InjuriesPage() {
                   >
                     View Details
                   </Link>
-                  {user?.role === 'parent' && (!injury.child.parent || injury.child.parent._id === user.id) && (
+                  {user?.role === 'parent' && injury.child?.parent?._id?.toString() === user.id && (
                     <Link
                       href={`/injuries/${injury._id}/edit`}
                       className="text-gray-600 hover:text-gray-800 text-sm font-medium"

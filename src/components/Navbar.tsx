@@ -30,31 +30,26 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('/api/auth/me');
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-      } else {
-        // Not authenticated, redirect to login immediately
-        if (!pathname.startsWith('/login') && !pathname.startsWith('/register') && !pathname.startsWith('/forgot-password') && !pathname.startsWith('/reset-password') && !pathname.startsWith('/verify-email') && pathname !== '/') {
-          router.push('/login');
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          setUser(null);
         }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      // If there's an error, redirect to login
-      if (!pathname.startsWith('/login') && !pathname.startsWith('/register') && !pathname.startsWith('/forgot-password') && !pathname.startsWith('/reset-password') && !pathname.startsWith('/verify-email') && pathname !== '/') {
-        router.push('/login');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+
+    // Always check auth status
+    checkAuth();
+  }, [pathname]);
 
   const handleLogout = async () => {
     try {
@@ -62,6 +57,7 @@ export default function Navbar() {
         method: 'POST',
       });
       if (response.ok) {
+        setUser(null);
         router.push('/login');
       }
     } catch (error) {
@@ -73,13 +69,16 @@ export default function Navbar() {
     return pathname === path;
   };
 
+  // Show loading navbar
   if (isLoading) {
     return (
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <h1 className="text-xl sm:text-2xl font-bold text-blue-600">Next Play Recovery</h1>
+              <Link href="/" className="text-xl sm:text-2xl font-bold text-blue-600">
+                Next Play Recovery
+              </Link>
             </div>
           </div>
         </div>
@@ -87,32 +86,42 @@ export default function Navbar() {
     );
   }
 
-  // Don't show navbar on auth pages or landing page
-  if (!user || pathname.startsWith('/login') || pathname.startsWith('/register') || pathname.startsWith('/forgot-password') || pathname.startsWith('/reset-password') || pathname.startsWith('/verify-email') || pathname === '/') {
-    return null;
-  }
+  // Define navigation items based on authentication status
+  const getNavItems = () => {
+    if (!user) {
+      // Unauthenticated users see only Resources
+      return [
+        { name: 'Resources', href: '/resources', icon: BookOpen },
+      ];
+    }
 
-  const navItems = user?.role === 'admin' 
-    ? [
+    // Authenticated users see full navigation
+    if (user.role === 'admin') {
+      return [
         { name: 'Admin Dashboard', href: '/admin', icon: Settings },
         { name: 'Children', href: '/children', icon: Users },
         { name: 'Injuries', href: '/injuries', icon: Activity },
         { name: 'Resources', href: '/resources', icon: BookOpen },
-      ]
-    : [
+      ];
+    } else {
+      return [
         { name: 'Dashboard', href: '/dashboard', icon: Home },
         { name: 'Children', href: '/children', icon: Users },
         { name: 'Injuries', href: '/injuries', icon: Activity },
         { name: 'Resources', href: '/resources', icon: BookOpen },
       ];
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href={user?.role === 'admin' ? '/admin' : '/dashboard'} className="flex items-center">
+            <Link href="/" className="flex items-center">
               <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 whitespace-nowrap">
                 Next Play Recovery
               </h1>
@@ -142,27 +151,47 @@ export default function Navbar() {
 
           {/* User Menu and Mobile Menu Button */}
           <div className="flex items-center space-x-2 lg:space-x-4">
-            {/* Desktop User Menu */}
-            <div className="hidden lg:flex items-center space-x-2 xl:space-x-4">
-              <Link
-                href="/profile"
-                className={`flex items-center px-2 xl:px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap ${
-                  isActive('/profile')
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                }`}
-              >
-                <User className="h-4 w-4 mr-1 xl:mr-2" />
-                <span className="hidden xl:inline">{user.name}</span>
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="flex items-center px-2 xl:px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 rounded-md transition-colors duration-200 whitespace-nowrap"
-              >
-                <LogOut className="h-4 w-4 mr-1 xl:mr-2" />
-                <span className="hidden xl:inline">Logout</span>
-              </button>
-            </div>
+            {/* Desktop User Menu - only for authenticated users */}
+            {user && (
+              <div className="hidden lg:flex items-center space-x-2 xl:space-x-4">
+                <Link
+                  href="/profile"
+                  className={`flex items-center px-2 xl:px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap ${
+                    isActive('/profile')
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <User className="h-4 w-4 mr-1 xl:mr-2" />
+                  <span className="hidden xl:inline">{user.name}</span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center px-2 xl:px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 rounded-md transition-colors duration-200 whitespace-nowrap"
+                >
+                  <LogOut className="h-4 w-4 mr-1 xl:mr-2" />
+                  <span className="hidden xl:inline">Logout</span>
+                </button>
+              </div>
+            )}
+
+            {/* Show Login/Register for unauthenticated users - positioned on the right */}
+            {!user && (
+              <div className="hidden lg:flex items-center space-x-2 xl:space-x-4">
+                <Link
+                  href="/login"
+                  className="flex items-center px-2 xl:px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200 whitespace-nowrap"
+                >
+                  <span className="hidden xl:inline">Login</span>
+                </Link>
+                <Link
+                  href="/register"
+                  className="btn-primary inline-flex items-center px-2 xl:px-3 py-2 text-sm font-medium whitespace-nowrap"
+                >
+                  <span className="hidden xl:inline">Register</span>
+                </Link>
+              </div>
+            )}
 
             {/* Mobile menu button */}
             <button
@@ -200,28 +229,54 @@ export default function Navbar() {
                   </Link>
                 );
               })}
-              <Link
-                href="/profile"
-                className={`flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors duration-200 ${
-                  isActive('/profile')
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <User className="h-4 w-4 mr-3" />
-                {user.name}
-              </Link>
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
-              >
-                <LogOut className="h-4 w-4 mr-3" />
-                Logout
-              </button>
+              
+              {/* Show Login/Register for unauthenticated users on mobile */}
+              {!user && (
+                <>
+                  <Link
+                    href="/login"
+                    className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="flex items-center px-3 py-2 text-base font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
+              
+              {/* Show user menu for authenticated users on mobile */}
+              {user && (
+                <>
+                  <Link
+                    href="/profile"
+                    className={`flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors duration-200 ${
+                      isActive('/profile')
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <User className="h-4 w-4 mr-3" />
+                    {user.name}
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                  >
+                    <LogOut className="h-4 w-4 mr-3" />
+                    Logout
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}

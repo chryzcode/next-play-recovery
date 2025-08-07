@@ -159,7 +159,7 @@ export default function InjuryDetailsPage() {
               <h1 className="text-3xl font-bold text-gray-900">{injury.type}</h1>
             </div>
             <div className="flex items-center space-x-2">
-              {user?.role === 'parent' && (!injury.child.parent || injury.child.parent._id === user.id) && (
+              {user?.role === 'parent' && injury.child?.parent?._id?.toString() === user.id && (
                 <>
                   <Link href={`/injuries/${injury._id}/edit`} className="btn-primary">
                     <Edit className="h-4 w-4 mr-2" />

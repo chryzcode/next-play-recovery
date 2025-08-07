@@ -1,33 +1,43 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight, Shield, Activity, Users, BookOpen } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'parent';
+}
 
 export default function Home() {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <h1 className="text-2xl font-bold text-blue-600">Next Play Recovery</h1>
-              </div>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 font-medium">
-                Dashboard
-              </Link>
-              <Link href="/resources" className="text-gray-700 hover:text-blue-600 font-medium">
-                Resources
-              </Link>
-              <Link href="/login" className="text-gray-700 hover:text-blue-600 font-medium">
-                Login
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -41,13 +51,27 @@ export default function Home() {
               track recovery progress, and access expert resources for safe return to play.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/register" 
-                className="btn-primary inline-flex items-center px-8 py-3 text-lg"
-              >
-                Get Started
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+              {!isLoading && (
+                <>
+                  {user ? (
+                    <Link 
+                      href={user.role === 'admin' ? '/admin' : '/dashboard'} 
+                      className="btn-primary inline-flex items-center px-8 py-3 text-lg"
+                    >
+                      Go to Dashboard
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  ) : (
+                    <Link 
+                      href="/register" 
+                      className="btn-primary inline-flex items-center px-8 py-3 text-lg"
+                    >
+                      Get Started (Register)
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  )}
+                </>
+              )}
               <Link 
                 href="/resources" 
                 className="btn-secondary inline-flex items-center px-8 py-3 text-lg"

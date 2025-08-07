@@ -1,5 +1,10 @@
 import mongoose from 'mongoose';
 
+// Import all models to ensure they are registered
+import '@/models/User';
+import '@/models/Child';
+import '@/models/Injury';
+
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/next-play-recovery';
 
 if (!MONGODB_URI) {

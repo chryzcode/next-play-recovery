@@ -41,7 +41,14 @@ export async function GET(
 
     // Get injury and verify ownership
     const injury = await Injury.findById(injuryId)
-      .populate('child', 'name age parent');
+      .populate({
+        path: 'child',
+        select: 'name age parent',
+        populate: {
+          path: 'parent',
+          select: 'name email _id'
+        }
+      });
 
     if (!injury) {
       return NextResponse.json({ error: 'Injury not found' }, { status: 404 });
@@ -112,7 +119,14 @@ export async function PUT(
 
     // Get injury and verify ownership
     const injury = await Injury.findById(injuryId)
-      .populate('child', 'parent');
+      .populate({
+        path: 'child',
+        select: 'parent',
+        populate: {
+          path: 'parent',
+          select: 'name email _id'
+        }
+      });
 
     if (!injury) {
       return NextResponse.json({ error: 'Injury not found' }, { status: 404 });
@@ -185,7 +199,14 @@ export async function DELETE(
 
     // Get injury and verify ownership
     const injury = await Injury.findById(injuryId)
-      .populate('child', 'parent');
+      .populate({
+        path: 'child',
+        select: 'parent',
+        populate: {
+          path: 'parent',
+          select: 'name email _id'
+        }
+      });
 
     if (!injury) {
       return NextResponse.json({ error: 'Injury not found' }, { status: 404 });

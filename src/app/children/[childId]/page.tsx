@@ -148,7 +148,7 @@ export default function ChildDetailsPage() {
               <h1 className="text-3xl font-bold text-gray-900">{child.name}</h1>
             </div>
             <div className="flex items-center space-x-2">
-              {user?.role === 'parent' && child.parent && child.parent._id === user.id && (
+              {user?.role === 'parent' && child?.parent?._id?.toString() === user.id && (
                 <>
                   <Link href={`/children/${child._id}/edit`} className="btn-primary">
                     <Edit className="h-4 w-4 mr-2" />
@@ -201,7 +201,7 @@ export default function ChildDetailsPage() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Injury History</h2>
             <div className="flex items-center space-x-2">
-              {user?.role === 'parent' && child.parent && child.parent._id === user.id && (
+              {user?.role === 'parent' && child?.parent?._id?.toString() === user.id && (
                 <Link href={`/children/${child._id}/injuries/new`} className="btn-primary">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Injury

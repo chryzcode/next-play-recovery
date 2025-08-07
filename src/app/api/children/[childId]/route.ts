@@ -30,10 +30,11 @@ export async function GET(
     if (decoded.role === 'admin') {
       child = await Child.findById(childId)
         .populate('injuries')
-        .populate('parent', 'name email');
+        .populate('parent', 'name email _id');
     } else {
       child = await Child.findOne({ _id: childId, parent: decoded.userId })
-        .populate('injuries');
+        .populate('injuries')
+        .populate('parent', 'name email _id');
     }
 
     if (!child) {

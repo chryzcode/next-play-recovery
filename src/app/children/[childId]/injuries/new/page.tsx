@@ -128,22 +128,14 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Link href="/dashboard" className="mr-4">
-                <ArrowLeft className="h-5 w-5 text-gray-600 hover:text-gray-900" />
-              </Link>
-              <h1 className="text-2xl font-bold text-blue-600">Add New Injury</h1>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card">
+          <div className="flex items-center mb-6">
+            <Link href="/dashboard" className="mr-4">
+              <ArrowLeft className="h-5 w-5 text-gray-600 hover:text-gray-900" />
+            </Link>
+            <h1 className="text-2xl font-bold text-blue-600">Add New Injury</h1>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Injury Type */}
             <div>

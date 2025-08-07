@@ -40,7 +40,14 @@ export async function GET(request: NextRequest) {
       const childIds = children.map(child => child._id);
 
       injuries = await Injury.find({ child: { $in: childIds } })
-        .populate('child', 'name age')
+        .populate({
+          path: 'child',
+          select: 'name age parent',
+          populate: {
+            path: 'parent',
+            select: 'name email _id'
+          }
+        })
         .sort({ date: -1 });
     }
 
