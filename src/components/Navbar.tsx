@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
   Home, 
@@ -76,8 +77,15 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <Link href="/" className="text-xl sm:text-2xl font-bold text-blue-600">
-                Next Play Recovery
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/logo.jpeg"
+                  alt="Next Play Recovery logo"
+                  width={36}
+                  height={36}
+                  className="h-9 w-9 object-contain rounded"
+                  priority
+                />
               </Link>
             </div>
           </div>
@@ -122,9 +130,14 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 whitespace-nowrap">
-                Next Play Recovery
-              </h1>
+              <Image
+                src="/logo.jpeg"
+                alt="Next Play Recovery logo"
+                width={40}
+                height={40}
+                className="h-10 w-10 object-contain rounded"
+                priority
+              />
             </Link>
           </div>
           

@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Injury from '@/models/Injury';
 import Child from '@/models/Child';
 import { verifyToken } from '@/lib/auth';
+import { uploadImage } from '@/lib/cloudinary';
 
 export async function GET(request: NextRequest) {
   try {
@@ -110,6 +111,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Handle photo uploads to Cloudinary
+    let photoUrls: string[] = [];
+    if (photos.length > 0) {
+      try {
+        for (const photoData of photos) {
+          // Convert base64 to buffer
+          const base64Data = photoData.replace(/^data:image\/[a-z]+;base64,/, '');
+          const buffer = Buffer.from(base64Data, 'base64');
+          
+          // Upload to Cloudinary
+          const photoUrl = await uploadImage(buffer, 'next-play-recovery/injuries');
+          console.log('Uploaded photo URL:', photoUrl);
+          photoUrls.push(photoUrl);
+        }
+      } catch (error) {
+        console.error('Error uploading photos:', error);
+        return NextResponse.json(
+          { error: 'Failed to upload photos' },
+          { status: 500 }
+        );
+      }
+    }
+
+    console.log('Final photo URLs to be stored:', photoUrls);
+
     // Create injury
     const injury = new Injury({
       child: childId,
@@ -118,7 +144,7 @@ export async function POST(request: NextRequest) {
       date: date || new Date(),
       location,
       severity,
-      photos,
+      photos: photoUrls,
       notes,
       suggestedTimeline,
       recoveryStatus: 'Resting',
@@ -130,6 +156,8 @@ export async function POST(request: NextRequest) {
     await Child.findByIdAndUpdate(childId, {
       $push: { injuries: injury._id }
     });
+
+    console.log('Final injury object:', injury.toObject());
 
     return NextResponse.json(injury, { status: 201 });
   } catch (error) {

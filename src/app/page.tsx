@@ -37,16 +37,16 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400">
       {/* Hero Section */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
               Track Youth Sports Injuries with
-              <span className="text-blue-600"> Confidence</span>
+              <span className="text-white"> Confidence</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
               A comprehensive platform for parents to monitor their children's sports injuries, 
               track recovery progress, and access expert resources for safe return to play.
             </p>
@@ -74,7 +74,7 @@ export default function Home() {
               )}
               <Link 
                 href="/resources" 
-                className="btn-secondary inline-flex items-center px-8 py-3 text-lg"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center text-lg"
               >
                 View Resources
               </Link>
@@ -140,7 +140,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-orange-600">
+      <section className="py-20 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to Start Tracking Recovery?
@@ -150,7 +150,7 @@ export default function Home() {
           </p>
           <Link 
             href="/register" 
-            className="bg-white text-blue-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors duration-200 inline-flex items-center"
+            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center"
           >
             Create Free Account
             <ArrowRight className="ml-2 h-5 w-5" />

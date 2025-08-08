@@ -47,12 +47,16 @@ export default function InjuryDetailsPage() {
 
   const fetchInjury = async () => {
     try {
-      const response = await fetch(`/api/injuries/${params.injuryId}`);
+      const response = await fetch(`/api/injuries/${params.injuryId}`, {
+        credentials: 'include',
+      });
       if (response.ok) {
         const data = await response.json();
         setInjury(data.injury);
       } else {
-        toast.error('Failed to load injury details');
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        toast.error(errorData.error || 'Failed to load injury details');
         router.push('/dashboard');
       }
     } catch (error) {
@@ -68,6 +72,7 @@ export default function InjuryDetailsPage() {
     try {
       const response = await fetch(`/api/injuries/${params.injuryId}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -238,11 +243,11 @@ export default function InjuryDetailsPage() {
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Photos</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {injury.photos.map((photo, index) => (
-                    <div key={index} className="relative">
+                    <div key={index} className="relative bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                       <img
                         src={photo}
                         alt={`Injury photo ${index + 1}`}
-                        className="w-full h-48 object-cover rounded-lg"
+                        className="w-full h-64 object-contain rounded-lg"
                       />
                     </div>
                   ))}

@@ -55,7 +55,10 @@ export async function GET(
     }
 
     // Check if user owns this injury (through child) or is admin
-    if (decoded.role !== 'admin' && injury.child?.parent?.toString() !== decoded.userId) {
+    const childParentId = injury.child?.parent?._id || injury.child?.parent;
+    const childParentIdString = typeof childParentId === 'object' ? childParentId.toString() : childParentId;
+    
+    if (decoded.role !== 'admin' && childParentIdString !== decoded.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -133,7 +136,10 @@ export async function PUT(
     }
 
     // Check if user owns this injury (through child) or is admin
-    if (decoded.role !== 'admin' && injury.child?.parent?.toString() !== decoded.userId) {
+    const childParentId = injury.child?.parent?._id || injury.child?.parent;
+    const childParentIdString = typeof childParentId === 'object' ? childParentId.toString() : childParentId;
+    
+    if (decoded.role !== 'admin' && childParentIdString !== decoded.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -213,7 +219,10 @@ export async function DELETE(
     }
 
     // Check if user owns this injury (through child) or is admin
-    if (decoded.role !== 'admin' && injury.child?.parent?.toString() !== decoded.userId) {
+    const childParentId = injury.child?.parent?._id || injury.child?.parent;
+    const childParentIdString = typeof childParentId === 'object' ? childParentId.toString() : childParentId;
+    
+    if (decoded.role !== 'admin' && childParentIdString !== decoded.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 

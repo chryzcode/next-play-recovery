@@ -45,15 +45,30 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
   }, [formData.type]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setFormData({ ...formData, photos: [...formData.photos, ...files] });
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setFormData({ ...formData, photos: [file] });
     }
   };
 
   const removePhoto = (index: number) => {
     const newPhotos = formData.photos.filter((_, i) => i !== index);
     setFormData({ ...formData, photos: newPhotos });
+  };
+
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result);
+        } else {
+          reject(new Error('Failed to convert file to base64'));
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
   };
 
   const validateForm = () => {
@@ -83,8 +98,14 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
     const loadingToast = toast.loading('Creating injury record...');
 
     try {
-      // TODO: Implement photo upload to cloud storage
-      const photoUrls: string[] = []; // Placeholder for uploaded photo URLs
+      // Convert photos to base64 for upload
+      const photoUrls: string[] = [];
+      if (formData.photos.length > 0) {
+        for (const photo of formData.photos) {
+          const base64 = await convertFileToBase64(photo);
+          photoUrls.push(base64);
+        }
+      }
 
       const injuryData = {
         childId: childId,
@@ -256,19 +277,18 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
             {/* Photo Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Photos (Optional)
+                Photo (Optional)
               </label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <Upload className="mx-auto h-12 w-12 text-gray-400" />
                 <div className="mt-4">
                   <label htmlFor="photos" className="cursor-pointer">
                     <span className="btn-primary inline-flex items-center">
-                      Upload Photos
+                      Upload Photo
                     </span>
                     <input
                       id="photos"
                       type="file"
-                      multiple
                       accept="image/*"
                       onChange={handlePhotoChange}
                       className="hidden"
@@ -276,7 +296,7 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
                   </label>
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
-                  Upload photos of the injury (max 5 photos)
+                  Upload a photo of the injury (optional)
                 </p>
                 
                 {/* Privacy Notice */}
@@ -294,25 +314,23 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
                 </div>
               </div>
 
-              {/* Display uploaded photos */}
+              {/* Display uploaded photo */}
               {formData.photos.length > 0 && (
-                <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {formData.photos.map((photo, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Photo ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
+                <div className="mt-4">
+                  <div className="relative bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                    <img
+                      src={URL.createObjectURL(formData.photos[0])}
+                      alt="Injury photo"
+                      className="w-full h-64 object-contain rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(0)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
