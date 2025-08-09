@@ -22,7 +22,7 @@ export async function sendEmail(to: string, subject: string, htmlContent: string
       },
     });
     console.log("Email sent successfully via Brevo");
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof AxiosError) {
       console.error("Error sending email:", error.response?.data || error);
     }

@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle photo uploads to Cloudinary
-    let photoUrls: string[] = [];
+    const photoUrls: string[] = [];
     if (photos.length > 0) {
       try {
         for (const photoData of photos) {
@@ -122,7 +122,6 @@ export async function POST(request: NextRequest) {
           
           // Upload to Cloudinary
           const photoUrl = await uploadImage(buffer, 'next-play-recovery/injuries');
-          console.log('Uploaded photo URL:', photoUrl);
           photoUrls.push(photoUrl);
         }
       } catch (error) {
@@ -133,8 +132,6 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-
-    console.log('Final photo URLs to be stored:', photoUrls);
 
     // Create injury
     const injury = new Injury({
@@ -156,8 +153,6 @@ export async function POST(request: NextRequest) {
     await Child.findByIdAndUpdate(childId, {
       $push: { injuries: injury._id }
     });
-
-    console.log('Final injury object:', injury.toObject());
 
     return NextResponse.json(injury, { status: 201 });
   } catch (error) {

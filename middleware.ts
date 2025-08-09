@@ -1,64 +1,48 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from './src/lib/auth';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  
-  // Public routes that don't require authentication
-  const publicRoutes = [
-    '/',
-    '/login',
-    '/register',
-    '/forgot-password',
-    '/reset-password',
-    '/verify-email',
-    '/api/auth/login',
-    '/api/auth/register',
-    '/api/auth/forgot-password',
-    '/api/auth/reset-password',
-    '/api/auth/verify-email',
-  ];
+  // Get the pathname of the request (e.g. /, /dashboard, /admin)
+  const path = request.nextUrl.pathname;
 
-  // Check if the route is public
-  if (publicRoutes.some(route => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
-
-  // Check for authentication token
+  // Get the token from cookies
   const token = request.cookies.get('token')?.value;
+
+  // Define public paths that don't require authentication
+  const isPublicPath = path === '/' || 
+    path === '/login' || 
+    path === '/register' || 
+    path === '/forgot-password' || 
+    path === '/reset-password' || 
+    path === '/verify-email' ||
+    path.startsWith('/api/auth/');
+
+  // If the path is public and user is authenticated, redirect to dashboard
+  if (isPublicPath && token) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // If the path is protected and user is not authenticated, redirect to login
+  if (!isPublicPath && !token) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Add security headers
+  const response = NextResponse.next();
   
-  if (!token) {
-    // Redirect to login if no token
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
-  }
+  // Security headers
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Remove server information
+  response.headers.delete('X-Powered-By');
 
-  // Verify token
-  const decoded = verifyToken(token);
-  if (!decoded) {
-    // Clear invalid token and redirect to login
-    const response = NextResponse.redirect(new URL('/login', request.url));
-    response.cookies.delete('token');
-    return response;
-  }
-
-  // Check for admin-only routes
-  const adminRoutes = ['/admin'];
-  if (adminRoutes.some(route => pathname.startsWith(route))) {
-    if (decoded.role !== 'admin') {
-      // Redirect to dashboard if not admin
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-  }
-
-  // Redirect admins to admin dashboard when they try to access regular dashboard
-  if (pathname === '/dashboard' && decoded.role === 'admin') {
-    return NextResponse.redirect(new URL('/admin', request.url));
-  }
-
-  return NextResponse.next();
+  return response;
 }
 
+// Configure which paths the middleware should run on
 export const config = {
   matcher: [
     /*
@@ -67,7 +51,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - public folder
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
 }; 

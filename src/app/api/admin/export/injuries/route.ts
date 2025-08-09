@@ -4,6 +4,46 @@ import Injury from '@/models/Injury';
 import { verifyToken } from '@/lib/auth';
 import puppeteer from 'puppeteer';
 
+interface InjuryWithChild {
+  _id: string;
+  type: string;
+  description: string;
+  date: string;
+  location: string;
+  severity: 'mild' | 'moderate' | 'severe';
+  recoveryStatus: 'Resting' | 'Light Activity' | 'Full Play';
+  child: {
+    _id: string;
+    name: string;
+    age: number;
+    parent: {
+      _id: string;
+      name: string;
+      email: string;
+    };
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ExportInjury {
+  type: string;
+  description: string;
+  date: string;
+  location: string;
+  severity: string;
+  recoveryStatus: string;
+  child?: {
+    name: string;
+    age: number;
+    parent?: {
+      name: string;
+      email: string;
+    };
+  };
+  createdAt: string;
+}
+
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
@@ -50,7 +90,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function generateCSV(injuries: any[]) {
+function generateCSV(injuries: ExportInjury[]) {
   // Enhanced CSV with better formatting and more details
   const headers = [
     'Type',
@@ -115,12 +155,12 @@ function generateCSV(injuries: any[]) {
   });
 }
 
-async function generatePDF(injuries: any[]) {
+async function generatePDF(injuries: ExportInjury[]) {
   let browser;
   try {
     // Launch puppeteer with proper configuration
     browser = await puppeteer.launch({
-      headless: 'new',
+      headless: true,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',

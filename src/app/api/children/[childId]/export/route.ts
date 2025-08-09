@@ -5,6 +5,33 @@ import Injury from '@/models/Injury';
 import { verifyToken } from '@/lib/auth';
 import puppeteer from 'puppeteer';
 
+interface ExportChild {
+  _id: string;
+  name: string;
+  age: number;
+  gender: string;
+  sport: string;
+  parent: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+}
+
+interface ExportInjury {
+  _id: string;
+  type: string;
+  description: string;
+  date: string;
+  location: string;
+  severity: string;
+  recoveryStatus: string;
+  progressPercentage?: number;
+  notes: string;
+  createdAt: string;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ childId: string }> }
@@ -59,7 +86,7 @@ export async function GET(
   }
 }
 
-function generateCSV(child: any, injuries: any[]) {
+function generateCSV(child: ExportChild, injuries: ExportInjury[]) {
   // Enhanced CSV with better formatting and more details
   const headers = [
     'Injury Type',
@@ -124,12 +151,12 @@ function generateCSV(child: any, injuries: any[]) {
   });
 }
 
-async function generatePDF(child: any, injuries: any[]) {
+async function generatePDF(child: ExportChild, injuries: ExportInjury[]) {
   let browser;
   try {
     // Launch puppeteer with proper configuration
     browser = await puppeteer.launch({
-      headless: 'new',
+      headless: true,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
