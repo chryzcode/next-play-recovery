@@ -46,7 +46,7 @@ export default function Home() {
               Track Youth Sports Injuries with
               <span className="text-white"> Confidence</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-white mb-8 max-w-3xl mx-auto">
               A comprehensive platform for parents to monitor their children&apos;s sports injuries, 
               track recovery progress, and access expert resources for safe return to play.
             </p>
