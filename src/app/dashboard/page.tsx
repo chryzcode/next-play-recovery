@@ -209,7 +209,7 @@ export default function DashboardPage() {
               <p className="text-gray-600 mb-6">Get started by adding your first child to track their sports injuries and recovery progress.</p>
               <Link
                 href="/children/new"
-                className="btn-primary inline-flex items-center"
+                className="btn-primary inline-flex items-center justify-center"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Your First Child
@@ -226,7 +226,7 @@ export default function DashboardPage() {
                   {user?.role === 'parent' && (
                     <Link
                       href={`/children/${child._id}/injuries/new`}
-                      className="btn-primary inline-flex items-center"
+                      className="btn-primary inline-flex items-center justify-center"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Injury
@@ -310,7 +310,7 @@ export default function DashboardPage() {
           <div className="mt-8 text-center">
             <Link
               href="/children/new"
-              className="btn-secondary inline-flex items-center"
+              className="btn-secondary inline-flex items-center justify-center"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Child

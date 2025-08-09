@@ -155,24 +155,24 @@ export default function InjuryDetailsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="btn-secondary">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <Link href="/dashboard" className="btn-secondary inline-flex items-center justify-center">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Link>
-              <h1 className="text-3xl font-bold text-gray-900">{injury.type}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 text-center sm:text-left">{injury.type}</h1>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col sm:flex-row items-center gap-2">
               {user?.role === 'parent' && injury.child?.parent?._id?.toString() === user.id && (
                 <>
-                  <Link href={`/injuries/${injury._id}/edit`} className="btn-primary">
+                  <Link href={`/injuries/${injury._id}/edit`} className="btn-primary inline-flex items-center justify-center">
                     <Edit className="h-4 w-4 mr-2" />
                     Edit
                   </Link>
                   <button
                     onClick={() => setShowDeleteModal(true)}
-                    className="btn-secondary bg-red-500 hover:bg-red-600"
+                    className="btn-secondary bg-red-500 hover:bg-red-600 inline-flex items-center justify-center"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete
@@ -272,7 +272,7 @@ export default function InjuryDetailsPage() {
                 </div>
                 <Link
                   href={`/children/${injury.child._id}`}
-                  className="btn-primary w-full text-center"
+                  className="btn-primary w-full inline-flex items-center justify-center"
                 >
                   View Child Details
                 </Link>
@@ -331,7 +331,7 @@ export default function InjuryDetailsPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 sm:w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3 text-center">
               <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Delete Injury
@@ -339,7 +339,7 @@ export default function InjuryDetailsPage() {
               <p className="text-sm text-gray-500 mb-6">
                 Are you sure you want to delete this injury record? This action cannot be undone.
               </p>
-              <div className="flex justify-center space-x-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <button
                   onClick={() => setShowDeleteModal(false)}
                   className="btn-secondary"

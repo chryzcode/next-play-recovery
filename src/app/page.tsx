@@ -50,13 +50,13 @@ export default function Home() {
               A comprehensive platform for parents to monitor their children&apos;s sports injuries, 
               track recovery progress, and access expert resources for safe return to play.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               {!isLoading && (
                 <>
                   {user ? (
                     <Link 
                       href={user.role === 'admin' ? '/admin' : '/dashboard'} 
-                      className="btn-primary inline-flex items-center px-8 py-3 text-lg"
+                      className="btn-primary inline-flex items-center justify-center px-6 py-3 text-lg"
                     >
                       Go to Dashboard
                       <ArrowRight className="ml-2 h-5 w-5" />
@@ -64,7 +64,7 @@ export default function Home() {
                   ) : (
                     <Link 
                       href="/register" 
-                      className="btn-primary inline-flex items-center px-8 py-3 text-lg"
+                      className="btn-primary inline-flex items-center justify-center px-6 py-3 text-lg"
                     >
                       Get Started
                       <ArrowRight className="ml-2 h-5 w-5" />
@@ -74,7 +74,7 @@ export default function Home() {
               )}
               <Link 
                 href="/resources" 
-                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center text-lg"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center justify-center text-lg"
               >
                 View Resources
               </Link>
@@ -153,7 +153,7 @@ export default function Home() {
               {user ? (
                 <Link 
                   href={user.role === 'admin' ? '/admin' : '/dashboard'} 
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center"
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center justify-center text-lg min-w-[180px]"
                 >
                   Go to Dashboard
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -161,7 +161,7 @@ export default function Home() {
               ) : (
                 <Link 
                   href="/register" 
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center"
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center justify-center text-lg min-w-[180px]"
                 >
                   Create Free Account
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -193,13 +193,13 @@ export default function Home() {
             <div>
               <h4 className="text-lg font-semibold mb-4">Contact</h4>
               <p className="text-gray-400">
-                Questions? Reach out to our support team.
+                Questions? Reach out to our <a href="mailto:aidenlin0620@gmail.com" className="text-gray-400 hover:text-white">support team</a>.
               </p>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center">
             <p className="text-gray-400">
-              © 2024 Next Play Recovery. All rights reserved.
+              © 2025 Next Play Recovery. All rights reserved.
             </p>
           </div>
         </div>

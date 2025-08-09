@@ -139,24 +139,24 @@ export default function ChildDetailsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="btn-secondary">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <Link href="/dashboard" className="btn-secondary inline-flex items-center justify-center">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Link>
-              <h1 className="text-3xl font-bold text-gray-900">{child.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 text-center sm:text-left">{child.name}</h1>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col sm:flex-row items-center gap-2">
               {user?.role === 'parent' && child?.parent?._id?.toString() === user.id && (
                 <>
-                  <Link href={`/children/${child._id}/edit`} className="btn-primary">
+                  <Link href={`/children/${child._id}/edit`} className="btn-primary inline-flex items-center justify-center">
                     <Edit className="h-4 w-4 mr-2" />
                     Edit
                   </Link>
                   <button
                     onClick={() => setShowDeleteModal(true)}
-                    className="btn-secondary bg-red-500 hover:bg-red-600"
+                    className="btn-secondary bg-red-500 hover:bg-red-600 inline-flex items-center justify-center"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete
@@ -198,26 +198,26 @@ export default function ChildDetailsPage() {
 
         {/* Injuries Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Injury History</h2>
-            <div className="flex items-center space-x-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+            <h2 className="text-xl font-semibold text-gray-900 text-center sm:text-left">Injury History</h2>
+            <div className="flex flex-col sm:flex-row items-center gap-2">
               {user?.role === 'parent' && child?.parent?._id?.toString() === user.id && (
-                <Link href={`/children/${child._id}/injuries/new`} className="btn-primary">
+                <Link href={`/children/${child._id}/injuries/new`} className="btn-primary inline-flex items-center justify-center">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Injury
                 </Link>
               )}
-              <div className="flex space-x-2">
+              <div className="flex gap-2">
                 <Link
                   href={`/api/children/${child._id}/export?format=csv`}
-                  className="btn-secondary"
+                  className="btn-secondary inline-flex items-center justify-center"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Export CSV
                 </Link>
                 <Link
                   href={`/api/children/${child._id}/export?format=pdf`}
-                  className="btn-secondary"
+                  className="btn-secondary inline-flex items-center justify-center"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Export PDF

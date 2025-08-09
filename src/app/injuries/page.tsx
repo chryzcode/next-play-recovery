@@ -285,7 +285,7 @@ export default function InjuriesPage() {
             </div>
             <button
               onClick={() => setShowChildModal(false)}
-              className="mt-4 w-full btn-secondary"
+              className="mt-4 w-full btn-secondary inline-flex items-center justify-center"
             >
               Cancel
             </button>
