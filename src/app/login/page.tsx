@@ -36,6 +36,12 @@ export default function LoginPage() {
           id: loadingToast,
         });
         router.push('/dashboard');
+      } else if (response.status === 403 && data.requiresVerification) {
+        // User needs to verify email
+        toast.error(data.error, {
+          id: loadingToast,
+          duration: 6000, // Show for 6 seconds
+        });
       } else {
         toast.error(data.error || 'Login failed', {
           id: loadingToast,

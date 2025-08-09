@@ -145,7 +145,7 @@ export default function InjuriesPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Injuries</h1>
             <p className="text-gray-600 mt-2">
@@ -158,7 +158,7 @@ export default function InjuriesPage() {
           {user?.role === 'parent' && (
             <button
               onClick={handleAddInjury}
-              className="btn-primary inline-flex items-center"
+              className="btn-primary inline-flex items-center self-start sm:self-auto"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Injury

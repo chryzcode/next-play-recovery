@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
+import { sendVerificationEmail } from '@/lib/email';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -35,6 +37,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
+      );
+    }
+
+    // Check if user is verified
+    if (!user.isEmailVerified) {
+      // Generate new verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+      // Update user with new verification token
+      user.emailVerificationToken = verificationToken;
+      user.emailVerificationExpires = verificationExpires;
+      await user.save();
+
+      // Send verification email
+      try {
+        await sendVerificationEmail(user.email, verificationToken);
+      } catch (emailError) {
+        console.error('Error sending verification email:', emailError);
+      }
+
+      return NextResponse.json(
+        { 
+            error: 'Unverified, check your email for verification.',
+          requiresVerification: true
+        },
+        { status: 403 }
       );
     }
 
