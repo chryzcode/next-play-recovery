@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
-import Child from '@/models/Child';
 import { verifyToken } from '@/lib/auth';
+import bcrypt from 'bcryptjs';
 
 export async function GET(request: NextRequest) {
   try {
@@ -99,7 +99,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const bcrypt = require('bcryptjs');
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create user

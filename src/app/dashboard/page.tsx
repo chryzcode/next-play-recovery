@@ -140,7 +140,7 @@ export default function DashboardPage() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back!</h2>
-          <p className="text-gray-600">Track and manage your children's sports injuries and recovery progress.</p>
+          <p className="text-gray-600">Track and manage your children&apos;s sports injuries and recovery progress.</p>
         </div>
 
         {/* Quick Stats */}

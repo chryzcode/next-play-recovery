@@ -6,6 +6,18 @@ import { Plus, Edit, Trash2, Activity, Download, FileText } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
 
+interface Injury {
+  _id: string;
+  type: string;
+  description: string;
+  date: string;
+  location: string;
+  severity: 'mild' | 'moderate' | 'severe';
+  recoveryStatus: 'Resting' | 'Light Activity' | 'Full Play';
+  notes: string;
+  createdAt: string;
+}
+
 interface Child {
   _id: string;
   name: string;
@@ -13,7 +25,7 @@ interface Child {
   gender: 'male' | 'female' | 'other';
   sport: string;
   notes: string;
-  injuries: any[];
+  injuries: Injury[];
   parent?: {
     _id: string;
     name: string;

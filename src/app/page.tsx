@@ -46,8 +46,8 @@ export default function Home() {
               Track Youth Sports Injuries with
               <span className="text-white"> Confidence</span>
             </h1>
-            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              A comprehensive platform for parents to monitor their children's sports injuries, 
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              A comprehensive platform for parents to monitor their children&apos;s sports injuries, 
               track recovery progress, and access expert resources for safe return to play.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -66,7 +66,7 @@ export default function Home() {
                       href="/register" 
                       className="btn-primary inline-flex items-center px-8 py-3 text-lg"
                     >
-                      Get Started (Register)
+                      Get Started
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   )}
@@ -146,15 +146,29 @@ export default function Home() {
             Ready to Start Tracking Recovery?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of families who trust Next Play Recovery for their children's sports injury management.
+            Join thousands of families who trust Next Play Recovery for their children&apos;s sports injury management.
           </p>
-          <Link 
-            href="/register" 
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center"
-          >
-            Create Free Account
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
+          {!isLoading && (
+            <>
+              {user ? (
+                <Link 
+                  href={user.role === 'admin' ? '/admin' : '/dashboard'} 
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center"
+                >
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              ) : (
+                <Link 
+                  href="/register" 
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center"
+                >
+                  Create Free Account
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              )}
+            </>
+          )}
         </div>
       </section>
 
