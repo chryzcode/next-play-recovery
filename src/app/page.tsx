@@ -66,7 +66,7 @@ export default function Home() {
                       href="/register" 
                       className="btn-primary inline-flex items-center px-8 py-3 text-lg"
                     >
-                      Get Started (Register)
+                      Get Started
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   )}
@@ -148,13 +148,27 @@ export default function Home() {
           <p className="text-xl text-blue-100 mb-8">
             Join thousands of families who trust Next Play Recovery for their children&apos;s sports injury management.
           </p>
-          <Link 
-            href="/register" 
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center"
-          >
-            Create Free Account
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
+          {!isLoading && (
+            <>
+              {user ? (
+                <Link 
+                  href={user.role === 'admin' ? '/admin' : '/dashboard'} 
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center"
+                >
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              ) : (
+                <Link 
+                  href="/register" 
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center"
+                >
+                  Create Free Account
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              )}
+            </>
+          )}
         </div>
       </section>
 
