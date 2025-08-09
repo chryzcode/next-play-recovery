@@ -134,7 +134,7 @@ export default function ChildrenPage() {
           {user?.role === 'parent' && (
             <Link
               href="/children/new"
-              className="btn-primary inline-flex items-center"
+              className="btn-primary inline-flex items-center justify-center"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Child
@@ -158,7 +158,7 @@ export default function ChildrenPage() {
             {user?.role === 'parent' && (
               <Link
                 href="/children/new"
-                className="btn-primary inline-flex items-center"
+                className="btn-primary inline-flex items-center justify-center"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Your First Child
@@ -264,7 +264,7 @@ export default function ChildrenPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && childToDelete && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 sm:w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3 text-center">
               <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Delete Child
@@ -272,7 +272,7 @@ export default function ChildrenPage() {
               <p className="text-sm text-gray-500 mb-6">
                 Are you sure you want to delete {childToDelete.name}? This action cannot be undone and will also delete all associated injuries.
               </p>
-              <div className="flex justify-center space-x-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <button
                   onClick={() => {
                     setShowDeleteModal(false);
