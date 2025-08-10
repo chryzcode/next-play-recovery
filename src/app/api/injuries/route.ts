@@ -4,12 +4,12 @@ import Injury from '@/models/Injury';
 import Child from '@/models/Child';
 import { verifyToken } from '@/lib/auth';
 import { uploadImage } from '@/lib/cloudinary';
+import User from '@/models/User';
 
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
 
-    // Verify authentication
     const token = request.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -20,23 +20,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
+    // Read role from DB to avoid stale token role
+    const currentUser = await User.findById(decoded.userId).select('role');
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     let injuries;
-    
-    // Check if user is admin
-    if (decoded.role === 'admin') {
-      // Admin can see all injuries
+
+    if (currentUser.role === 'admin') {
       injuries = await Injury.find()
         .populate({
           path: 'child',
           select: 'name age parent',
-          populate: {
-            path: 'parent',
-            select: 'name email'
-          }
+          populate: { path: 'parent', select: 'name email _id' }
         })
         .sort({ date: -1 });
     } else {
-      // Parents can only see injuries for their own children
       const children = await Child.find({ parent: decoded.userId });
       const childIds = children.map(child => child._id);
 
@@ -44,10 +44,7 @@ export async function GET(request: NextRequest) {
         .populate({
           path: 'child',
           select: 'name age parent',
-          populate: {
-            path: 'parent',
-            select: 'name email _id'
-          }
+          populate: { path: 'parent', select: 'name email _id' }
         })
         .sort({ date: -1 });
     }
@@ -66,7 +63,6 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
 
-    // Verify authentication
     const token = request.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -77,8 +73,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Only parents can create injuries (admins cannot create injuries for other users)
-    if (decoded.role !== 'parent') {
+    // Only parents (from DB) can create injuries
+    const currentUser = await User.findById(decoded.userId).select('role');
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    if (currentUser.role !== 'parent') {
       return NextResponse.json({ error: 'Only parents can create injuries' }, { status: 403 });
     }
 
@@ -94,7 +94,6 @@ export async function POST(request: NextRequest) {
       suggestedTimeline = 7
     } = await request.json();
 
-    // Validate input
     if (!childId || !type || !description || !location || !severity) {
       return NextResponse.json(
         { error: 'Missing required fields' },
@@ -111,16 +110,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Handle photo uploads to Cloudinary
     const photoUrls: string[] = [];
     if (photos.length > 0) {
       try {
         for (const photoData of photos) {
-          // Convert base64 to buffer
           const base64Data = photoData.replace(/^data:image\/[a-z]+;base64,/, '');
           const buffer = Buffer.from(base64Data, 'base64');
-          
-          // Upload to Cloudinary
           const photoUrl = await uploadImage(buffer, 'next-play-recovery/injuries');
           photoUrls.push(photoUrl);
         }
@@ -133,7 +128,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create injury
     const injury = new Injury({
       child: childId,
       type,
@@ -149,7 +143,6 @@ export async function POST(request: NextRequest) {
 
     await injury.save();
 
-    // Update child's injuries array
     await Child.findByIdAndUpdate(childId, {
       $push: { injuries: injury._id }
     });

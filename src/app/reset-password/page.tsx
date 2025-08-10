@@ -58,6 +58,7 @@ function ResetPasswordForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ token, password: formData.password }),
+        credentials: 'include'
       });
 
       const data = await response.json();

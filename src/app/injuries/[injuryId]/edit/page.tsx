@@ -34,15 +34,29 @@ export default function EditInjuryPage() {
 
   const fetchInjury = async () => {
     try {
-      const response = await fetch(`/api/injuries/${injuryId}`);
+      const response = await fetch(`/api/injuries/${injuryId}`, {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setInjury(data.injury);
+        setFormData({
+          type: data.injury.type,
+          description: data.injury.description,
+          date: data.injury.date.split('T')[0],
+          location: data.injury.location,
+          severity: data.injury.severity,
+          recoveryStatus: data.injury.recoveryStatus,
+          notes: data.injury.notes || '',
+        });
       } else {
-        toast.error('Failed to load injury');
+        toast.error('Failed to load injury details');
+        router.push('/injuries');
       }
     } catch (error) {
-      toast.error('An error occurred while loading the injury');
+      console.error('Error loading injury:', error);
+      toast.error('An error occurred while loading injury details');
+      router.push('/injuries');
     } finally {
       setIsLoading(false);
     }
@@ -50,10 +64,7 @@ export default function EditInjuryPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!injury) return;
-
-    setIsSaving(true);
-    const loadingToast = toast.loading('Updating injury...');
+    setIsLoading(true);
 
     try {
       const response = await fetch(`/api/injuries/${injuryId}`, {
@@ -61,37 +72,22 @@ export default function EditInjuryPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          type: injury.type,
-          description: injury.description,
-          date: injury.date,
-          location: injury.location,
-          severity: injury.severity,
-          recoveryStatus: injury.recoveryStatus,
-          notes: injury.notes,
-        }),
+        body: JSON.stringify(formData),
+        credentials: 'include'
       });
-
-      const data = await response.json();
 
       if (response.ok) {
-        toast.success('Injury updated successfully', {
-          id: loadingToast,
-        });
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 1500);
+        toast.success('Injury updated successfully!');
+        router.push(`/injuries/${injuryId}`);
       } else {
-        toast.error(data.error || 'Failed to update injury', {
-          id: loadingToast,
-        });
+        const data = await response.json();
+        toast.error(data.error || 'Failed to update injury');
       }
     } catch (error) {
-      toast.error('An error occurred while updating the injury', {
-        id: loadingToast,
-      });
+      console.error('Error updating injury:', error);
+      toast.error('An error occurred while updating the injury');
     } finally {
-      setIsSaving(false);
+      setIsLoading(false);
     }
   };
 

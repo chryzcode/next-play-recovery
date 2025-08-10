@@ -21,6 +21,7 @@ export default function ForgotPasswordPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email }),
+        credentials: 'include'
       });
 
       const data = await response.json();

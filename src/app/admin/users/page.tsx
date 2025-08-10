@@ -28,27 +28,27 @@ export default function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    if (user?.role === 'admin') {
-      fetchUsers();
-    }
-  }, [user]);
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch('/api/admin/users');
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data.users);
-      } else {
-        toast.error('Failed to fetch users');
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/admin/users', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUsers(data);
+        } else {
+          toast.error('Failed to fetch users');
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        toast.error('An error occurred while fetching users');
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      toast.error('An error occurred while fetching users');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+
+    fetchUsers();
+  }, []);
 
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

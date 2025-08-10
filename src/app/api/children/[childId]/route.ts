@@ -25,9 +25,15 @@ export async function GET(
 
     const { childId } = await params;
 
+    // Read role from DB to avoid stale token role
+    const currentUser = await User.findById(decoded.userId).select('role');
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     // Check if user is admin or owns the child
     let child;
-    if (decoded.role === 'admin') {
+    if (currentUser.role === 'admin') {
       child = await Child.findById(childId)
         .populate('injuries')
         .populate('parent', 'name email _id');
@@ -58,7 +64,6 @@ export async function PUT(
   try {
     await dbConnect();
 
-    // Verify authentication
     const token = request.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -71,17 +76,21 @@ export async function PUT(
 
     const { childId } = await params;
 
+    // Read role from DB to avoid stale token role
+    const currentUser = await User.findById(decoded.userId).select('role');
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     // Get child and check permissions
     let child;
-    if (decoded.role === 'admin') {
-      // Admin can view any child but not edit
+    if (currentUser.role === 'admin') {
       child = await Child.findById(childId).populate('injuries');
       if (!child) {
         return NextResponse.json({ error: 'Child not found' }, { status: 404 });
       }
       return NextResponse.json({ error: 'Admins cannot edit children' }, { status: 403 });
     } else {
-      // Parent can only edit their own children
       child = await Child.findOne({ _id: childId, parent: decoded.userId }).populate('injuries');
       if (!child) {
         return NextResponse.json({ error: 'Child not found' }, { status: 404 });
@@ -90,7 +99,6 @@ export async function PUT(
 
     const { name, age, gender, sport, notes } = await request.json();
 
-    // Validate input
     if (!name || !age) {
       return NextResponse.json(
         { error: 'Name and age are required' },
@@ -105,7 +113,6 @@ export async function PUT(
       );
     }
 
-    // Update child
     const updatedChild = await Child.findByIdAndUpdate(
       childId,
       {
@@ -135,7 +142,6 @@ export async function DELETE(
   try {
     await dbConnect();
 
-    // Verify authentication
     const token = request.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -148,35 +154,33 @@ export async function DELETE(
 
     const { childId } = await params;
 
+    // Read role from DB to avoid stale token role
+    const currentUser = await User.findById(decoded.userId).select('role');
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     // Get child and check permissions
     let child;
-    if (decoded.role === 'admin') {
-      // Admin can view any child but not delete
+    if (currentUser.role === 'admin') {
       child = await Child.findById(childId);
       if (!child) {
         return NextResponse.json({ error: 'Child not found' }, { status: 404 });
       }
       return NextResponse.json({ error: 'Admins cannot delete children' }, { status: 403 });
     } else {
-      // Parent can only delete their own children
       child = await Child.findOne({ _id: childId, parent: decoded.userId });
       if (!child) {
         return NextResponse.json({ error: 'Child not found' }, { status: 404 });
       }
     }
 
-    // Admins can only view, not delete children
-    if (decoded.role === 'admin') {
+    if (currentUser.role === 'admin') {
       return NextResponse.json({ error: 'Admins cannot delete children' }, { status: 403 });
     }
 
-    // Delete all injuries associated with this child
     await Injury.deleteMany({ child: childId });
-
-    // Delete the child
     await Child.findByIdAndDelete(childId);
-
-    // Remove child from parent's children array
     await User.findByIdAndUpdate(decoded.userId, {
       $pull: { children: childId }
     });

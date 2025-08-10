@@ -125,6 +125,7 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(injuryData),
+        credentials: 'include'
       });
 
       if (response.ok) {

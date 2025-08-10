@@ -48,7 +48,9 @@ export default function InjuriesPage() {
 
   const fetchInjuries = async () => {
     try {
-      const response = await fetch('/api/injuries');
+      const response = await fetch('/api/injuries', {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setInjuries(data);
@@ -64,7 +66,9 @@ export default function InjuriesPage() {
 
   const fetchChildren = async () => {
     try {
-      const response = await fetch('/api/children');
+      const response = await fetch('/api/children', {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setChildren(data);

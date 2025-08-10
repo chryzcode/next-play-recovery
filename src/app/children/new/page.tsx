@@ -28,7 +28,6 @@ export default function NewChildPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const loadingToast = toast.loading('Adding child...');
 
     try {
       const response = await fetch('/api/children', {
@@ -37,25 +36,19 @@ export default function NewChildPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        credentials: 'include'
       });
 
       if (response.ok) {
-        const data = await response.json();
-        toast.success('Child added successfully!', {
-          id: loadingToast,
-        });
-        router.push('/dashboard');
+        toast.success('Child added successfully!');
+        router.push('/children');
       } else {
-        const error = await response.json();
-        toast.error(error.message || 'Failed to add child', {
-          id: loadingToast,
-        });
+        const data = await response.json();
+        toast.error(data.error || 'Failed to add child');
       }
     } catch (error) {
       console.error('Error adding child:', error);
-      toast.error('Failed to add child', {
-        id: loadingToast,
-      });
+      toast.error('An error occurred while adding the child');
     } finally {
       setIsLoading(false);
     }
