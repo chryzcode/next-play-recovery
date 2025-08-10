@@ -20,14 +20,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
+    // Always read role from DB to avoid stale token role
+    const currentUser = await User.findById(decoded.userId).select('role');
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     let children;
-    
-    // Check if user is admin
-    if (decoded.role === 'admin') {
+
+    if (currentUser.role === 'admin') {
       // Admin can see all children
       children = await Child.find()
         .populate('injuries')
-        .populate('parent', 'name email')
+        .populate('parent', 'name email _id')
         .sort({ createdAt: -1 });
     } else {
       // Parents can only see their own children
@@ -61,8 +66,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Only parents can create children (admins cannot create children for other users)
-    if (decoded.role !== 'parent') {
+    // Only parents (from DB) can create children
+    const currentUser = await User.findById(decoded.userId).select('role');
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    if (currentUser.role !== 'parent') {
       return NextResponse.json({ error: 'Only parents can create children' }, { status: 403 });
     }
 

@@ -36,25 +36,27 @@ export default function EditChildPage() {
 
   const fetchChild = async () => {
     try {
-      const response = await fetch(`/api/children/${params.childId}`);
+      const response = await fetch(`/api/children/${params.childId}`, {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setChild(data);
         setFormData({
           name: data.name,
-          age: data.age.toString(),
+          age: data.age,
           gender: data.gender,
           sport: data.sport || '',
-          notes: data.notes || ''
+          notes: data.notes || '',
         });
       } else {
         toast.error('Failed to load child details');
-        router.push('/dashboard');
+        router.push('/children');
       }
     } catch (error) {
-      console.error('Error fetching child:', error);
+      console.error('Error loading child:', error);
       toast.error('An error occurred while loading child details');
-      router.push('/dashboard');
+      router.push('/children');
     } finally {
       setIsLoading(false);
     }
@@ -62,8 +64,7 @@ export default function EditChildPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
-    const loadingToast = toast.loading('Updating child...');
+    setIsLoading(true);
 
     try {
       const response = await fetch(`/api/children/${params.childId}`, {
@@ -71,27 +72,22 @@ export default function EditChildPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: formData.name,
-          age: parseInt(formData.age),
-          gender: formData.gender,
-          sport: formData.sport,
-          notes: formData.notes
-        }),
+        body: JSON.stringify(formData),
+        credentials: 'include'
       });
 
       if (response.ok) {
-        toast.success('Child updated successfully', { id: loadingToast });
+        toast.success('Child updated successfully!');
         router.push(`/children/${params.childId}`);
       } else {
         const data = await response.json();
-        toast.error(data.error || 'Failed to update child', { id: loadingToast });
+        toast.error(data.error || 'Failed to update child');
       }
     } catch (error) {
       console.error('Error updating child:', error);
-      toast.error('An error occurred while updating the child', { id: loadingToast });
+      toast.error('An error occurred while updating the child');
     } finally {
-      setIsSaving(false);
+      setIsLoading(false);
     }
   };
 

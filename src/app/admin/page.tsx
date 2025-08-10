@@ -66,60 +66,60 @@ export default function AdminDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.role === 'admin') {
-      fetchAdminData();
-    }
-  }, [user]);
+    const fetchStats = async () => {
+      try {
+        const [statsResponse, usersResponse, injuriesResponse] = await Promise.all([
+          fetch('/api/admin/stats', { credentials: 'include' }),
+          fetch('/api/admin/users', { credentials: 'include' }),
+          fetch('/api/injuries?limit=5', { credentials: 'include' })
+        ]);
 
-  const fetchAdminData = async () => {
-    try {
-      const [statsResponse, usersResponse, injuriesResponse] = await Promise.all([
-        fetch('/api/admin/stats'),
-        fetch('/api/admin/users'),
-        fetch('/api/injuries?limit=5')
-      ]);
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData);
+        }
 
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        setStats(statsData);
+        if (usersResponse.ok) {
+          const usersData = await usersResponse.json();
+          setUsers(usersData);
+        }
+
+        if (injuriesResponse.ok) {
+          const injuriesData = await injuriesResponse.json();
+          setRecentInjuries(injuriesData);
+        }
+      } catch (error) {
+        console.error('Error fetching admin data:', error);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      if (usersResponse.ok) {
-        const usersData = await usersResponse.json();
-        setUsers(usersData.users);
-      }
-
-      if (injuriesResponse.ok) {
-        const injuriesData = await injuriesResponse.json();
-        setRecentInjuries(injuriesData.slice(0, 5));
-      }
-    } catch (error) {
-      console.error('Error fetching admin data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    fetchStats();
+  }, []);
 
   const handleExport = async (type: 'children' | 'injuries', format: 'csv' | 'pdf') => {
     try {
-      const response = await fetch(`/api/admin/export/${type}?format=${format}`);
+      const response = await fetch(`/api/admin/export/${type}?format=${format}`, {
+        credentials: 'include'
+      });
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = response.headers.get('content-disposition')?.split('filename=')[1]?.replace(/"/g, '') || `export.${format}`;
+        a.download = `${type}-${format}.${format === 'csv' ? 'csv' : 'pdf'}`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
-        toast.success(`${type.toUpperCase()} ${format.toUpperCase()} export completed`);
+        toast.success(`${type} exported successfully as ${format.toUpperCase()}`);
       } else {
-        toast.error('Failed to export data');
+        toast.error('Export failed');
       }
     } catch (error) {
-      console.error('Error exporting data:', error);
-      toast.error('An error occurred while exporting data');
+      console.error('Export error:', error);
+      toast.error('An error occurred during export');
     }
   };
 

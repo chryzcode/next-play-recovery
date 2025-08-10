@@ -57,7 +57,9 @@ export default function DashboardPage() {
   const checkAuthAndFetchData = async () => {
     try {
       // First check if user is authenticated
-      const authResponse = await fetch('/api/auth/me');
+      const authResponse = await fetch('/api/auth/me', {
+        credentials: 'include'
+      });
       if (!authResponse.ok) {
         // Not authenticated, redirect to login
         router.push('/login');
@@ -67,7 +69,9 @@ export default function DashboardPage() {
       setIsAuthenticated(true);
       
       // Now fetch children data
-      const childrenResponse = await fetch('/api/children');
+      const childrenResponse = await fetch('/api/children', {
+        credentials: 'include'
+      });
       if (childrenResponse.ok) {
         const data = await childrenResponse.json();
         setChildren(data);

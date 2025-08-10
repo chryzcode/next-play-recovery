@@ -4,6 +4,7 @@ import Child from '@/models/Child';
 import Injury from '@/models/Injury';
 import { verifyToken } from '@/lib/auth';
 import puppeteer from 'puppeteer';
+import User from '@/models/User';
 
 interface ExportChild {
   _id: string;
@@ -39,7 +40,6 @@ export async function GET(
   try {
     await dbConnect();
 
-    // Verify authentication
     const token = request.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -50,13 +50,17 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
+    const currentUser = await User.findById(decoded.userId).select('role');
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const { childId } = await params;
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'csv';
 
-    // Check if user is admin or owns the child
     let child;
-    if (decoded.role === 'admin') {
+    if (currentUser.role === 'admin') {
       child = await Child.findById(childId).populate('parent', 'name email');
     } else {
       child = await Child.findOne({ _id: childId, parent: decoded.userId });
@@ -66,9 +70,7 @@ export async function GET(
       return NextResponse.json({ error: 'Child not found' }, { status: 404 });
     }
 
-    // Get injuries for the child only
-    const injuries = await Injury.find({ child: childId })
-      .sort({ date: -1 });
+    const injuries = await Injury.find({ child: childId }).sort({ date: -1 });
 
     if (format === 'csv') {
       return generateCSV(child, injuries);

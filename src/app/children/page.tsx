@@ -47,7 +47,9 @@ export default function ChildrenPage() {
 
   const fetchChildren = async () => {
     try {
-      const response = await fetch('/api/children');
+      const response = await fetch('/api/children', {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setChildren(data);
@@ -55,7 +57,7 @@ export default function ChildrenPage() {
         toast.error('Failed to fetch children');
       }
     } catch (error) {
-      console.error('Error fetching children:', error);
+      console.error('Error fetching children', error);
       toast.error('An error occurred while fetching children');
     } finally {
       setIsLoading(false);
@@ -68,6 +70,7 @@ export default function ChildrenPage() {
     try {
       const response = await fetch(`/api/children/${childToDelete._id}`, {
         method: 'DELETE',
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -88,7 +91,9 @@ export default function ChildrenPage() {
 
   const handleExport = async (childId: string, format: 'csv' | 'pdf') => {
     try {
-      const response = await fetch(`/api/children/${childId}/export?format=${format}`);
+      const response = await fetch(`/api/children/${childId}/export?format=${format}`, {
+        credentials: 'include'
+      });
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -99,13 +104,13 @@ export default function ChildrenPage() {
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
-        toast.success(`${format.toUpperCase()} export completed`);
+        toast.success(`${format.toUpperCase()} export successful`);
       } else {
-        toast.error('Failed to export data');
+        toast.error('Export failed');
       }
     } catch (error) {
-      console.error('Error exporting data:', error);
-      toast.error('An error occurred while exporting data');
+      console.error('Export error:', error);
+      toast.error('An error occurred during export');
     }
   };
 

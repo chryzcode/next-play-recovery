@@ -35,7 +35,9 @@ export default function ProfilePage() {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('/api/user/profile');
+      const response = await fetch('/api/user/profile', {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setProfile(data.user);
@@ -61,6 +63,7 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name: profile.name }),
+        credentials: 'include'
       });
 
       const data = await response.json();
@@ -108,6 +111,7 @@ export default function ProfilePage() {
           currentPassword: passwords.currentPassword,
           newPassword: passwords.newPassword,
         }),
+        credentials: 'include'
       });
 
       const data = await response.json();

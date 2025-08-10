@@ -49,18 +49,19 @@ export default function ChildDetailsPage() {
 
   const fetchChild = async () => {
     try {
-      const response = await fetch(`/api/children/${params.childId}`);
+      const response = await fetch(`/api/children/${params.childId}`, {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setChild(data);
       } else {
-        toast.error('Failed to load child details');
-        router.push('/dashboard');
+        console.error('Failed to fetch child');
+        router.push('/children');
       }
     } catch (error) {
       console.error('Error fetching child:', error);
-      toast.error('An error occurred while loading child details');
-      router.push('/dashboard');
+      router.push('/children');
     } finally {
       setIsLoading(false);
     }
@@ -70,11 +71,12 @@ export default function ChildDetailsPage() {
     try {
       const response = await fetch(`/api/children/${params.childId}`, {
         method: 'DELETE',
+        credentials: 'include'
       });
 
       if (response.ok) {
         toast.success('Child deleted successfully');
-        router.push('/dashboard');
+        router.push('/children');
       } else {
         const data = await response.json();
         toast.error(data.error || 'Failed to delete child');

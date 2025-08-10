@@ -48,21 +48,18 @@ export default function InjuryDetailsPage() {
   const fetchInjury = async () => {
     try {
       const response = await fetch(`/api/injuries/${params.injuryId}`, {
-        credentials: 'include',
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
         setInjury(data.injury);
       } else {
-        const errorData = await response.json();
-        console.error('Error response:', errorData);
-        toast.error(errorData.error || 'Failed to load injury details');
-        router.push('/dashboard');
+        console.error('Failed to fetch injury');
+        router.push('/injuries');
       }
     } catch (error) {
       console.error('Error fetching injury:', error);
-      toast.error('An error occurred while loading injury details');
-      router.push('/dashboard');
+      router.push('/injuries');
     } finally {
       setIsLoading(false);
     }
@@ -72,12 +69,12 @@ export default function InjuryDetailsPage() {
     try {
       const response = await fetch(`/api/injuries/${params.injuryId}`, {
         method: 'DELETE',
-        credentials: 'include',
+        credentials: 'include'
       });
 
       if (response.ok) {
         toast.success('Injury deleted successfully');
-        router.push('/dashboard');
+        router.push('/injuries');
       } else {
         const data = await response.json();
         toast.error(data.error || 'Failed to delete injury');
