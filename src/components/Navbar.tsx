@@ -81,9 +81,9 @@ export default function Navbar() {
                 <Image
                   src="/logo.jpeg"
                   alt="Next Play Recovery logo"
-                  width={36}
-                  height={36}
-                  className="h-9 w-9 object-contain rounded"
+                  width={54}
+                  height={54}
+                  className="h-14 w-14 object-contain rounded"
                   priority
                 />
               </Link>
@@ -97,10 +97,8 @@ export default function Navbar() {
   // Define navigation items based on authentication status
   const getNavItems = () => {
     if (!user) {
-      // Unauthenticated users see only Resources
-      return [
-        { name: 'Resources', href: '/resources', icon: BookOpen },
-      ];
+      // Unauthenticated users see no navigation items
+      return [];
     }
 
     // Authenticated users see full navigation
@@ -109,14 +107,12 @@ export default function Navbar() {
         { name: 'Admin Dashboard', href: '/admin', icon: Settings },
         { name: 'Children', href: '/children', icon: Users },
         { name: 'Injuries', href: '/injuries', icon: Activity },
-        { name: 'Resources', href: '/resources', icon: BookOpen },
       ];
     } else {
       return [
         { name: 'Dashboard', href: '/dashboard', icon: Home },
         { name: 'Children', href: '/children', icon: Users },
         { name: 'Injuries', href: '/injuries', icon: Activity },
-        { name: 'Resources', href: '/resources', icon: BookOpen },
       ];
     }
   };
@@ -133,9 +129,9 @@ export default function Navbar() {
               <Image
                 src="/logo.jpeg"
                 alt="Next Play Recovery logo"
-                width={40}
-                height={40}
-                className="h-10 w-10 object-contain rounded"
+                width={60}
+                height={60}
+                className="h-15 w-15 object-contain rounded"
                 priority
               />
             </Link>
