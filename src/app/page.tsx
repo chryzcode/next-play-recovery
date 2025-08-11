@@ -145,10 +145,10 @@ export default function Home() {
       <section className="py-20 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Start Tracking Recovery?
+            Your athlete&apos;s recovery simplified.
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of families who trust Next Play Recovery for their children&apos;s sports injury management.
+            Start tracking progress and following expert tips in just minutes.
           </p>
           {!isLoading && (
             <>

@@ -27,6 +27,15 @@ export default function EditInjuryPage() {
   const [injury, setInjury] = useState<Injury | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    type: '',
+    description: '',
+    date: '',
+    location: '',
+    severity: 'mild' as 'mild' | 'moderate' | 'severe',
+    recoveryStatus: 'Resting' as 'Resting' | 'Light Activity' | 'Full Play',
+    notes: '',
+  });
 
   useEffect(() => {
     fetchInjury();
@@ -157,8 +166,8 @@ export default function EditInjuryPage() {
               <input
                 type="text"
                 id="type"
-                value={injury.type}
-                onChange={(e) => setInjury({ ...injury, type: e.target.value })}
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 required
               />
@@ -172,8 +181,8 @@ export default function EditInjuryPage() {
               <textarea
                 id="description"
                 rows={3}
-                value={injury.description}
-                onChange={(e) => setInjury({ ...injury, description: e.target.value })}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 required
               />
@@ -188,8 +197,8 @@ export default function EditInjuryPage() {
                 <input
                   type="date"
                   id="date"
-                  value={injury.date.split('T')[0]}
-                  onChange={(e) => setInjury({ ...injury, date: e.target.value })}
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
                 />
               </div>
@@ -201,8 +210,8 @@ export default function EditInjuryPage() {
                 <input
                   type="text"
                   id="location"
-                  value={injury.location}
-                  onChange={(e) => setInjury({ ...injury, location: e.target.value })}
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
                   required
                 />
@@ -216,8 +225,8 @@ export default function EditInjuryPage() {
               </label>
               <select
                 id="severity"
-                value={injury.severity}
-                onChange={(e) => setInjury({ ...injury, severity: e.target.value as 'mild' | 'moderate' | 'severe' })}
+                value={formData.severity}
+                onChange={(e) => setFormData({ ...formData, severity: e.target.value as 'mild' | 'moderate' | 'severe' })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
               >
                 <option value="mild">Mild</option>
@@ -233,8 +242,8 @@ export default function EditInjuryPage() {
               </label>
               <select
                 id="recoveryStatus"
-                value={injury.recoveryStatus}
-                onChange={(e) => setInjury({ ...injury, recoveryStatus: e.target.value as 'Resting' | 'Light Activity' | 'Full Play' })}
+                value={formData.recoveryStatus}
+                onChange={(e) => setFormData({ ...formData, recoveryStatus: e.target.value as 'Resting' | 'Light Activity' | 'Full Play' })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
               >
                 <option value="Resting">Resting</option>
@@ -251,18 +260,18 @@ export default function EditInjuryPage() {
               <div className="mb-2">
                 <div className="flex justify-between text-sm text-gray-600 mb-1">
                   <span>Progress</span>
-                  <span>{getProgressPercentage(injury.recoveryStatus)}%</span>
+                  <span>{getProgressPercentage(formData.recoveryStatus)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-gradient-to-r from-blue-500 to-orange-500 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${getProgressPercentage(injury.recoveryStatus)}%` }}
+                    style={{ width: `${getProgressPercentage(formData.recoveryStatus)}%` }}
                   ></div>
                 </div>
               </div>
               <div className="flex space-x-2">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(injury.recoveryStatus)}`}>
-                  {injury.recoveryStatus}
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(formData.recoveryStatus)}`}>
+                  {formData.recoveryStatus}
                 </span>
               </div>
             </div>
@@ -275,8 +284,8 @@ export default function EditInjuryPage() {
               <textarea
                 id="notes"
                 rows={3}
-                value={injury.notes}
-                onChange={(e) => setInjury({ ...injury, notes: e.target.value })}
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="Any additional information about the injury or treatment"
               />

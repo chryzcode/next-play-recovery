@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, Shield, Activity, Users, Heart, Brain, Utensils, Target, Zap } from 'lucide-react';
+import ChatWidget from '@/components/ChatWidget';
 
 interface Resource {
   id: string;
@@ -31,6 +32,14 @@ export default function ResourcesPage() {
         {
           question: 'What are the best stretches for soccer players?',
           answer: 'Focus on hip flexors, hamstrings, quadriceps, and calf muscles with dynamic movements like leg swings and walking lunges.'
+        },
+        {
+          question: 'Why are warm-ups important?',
+          answer: 'Warm-ups increase blood flow, raise muscle temperature, prepare joints for sports demands, reduce injury risk, and improve performance.'
+        },
+        {
+          question: 'What should I do after activity?',
+          answer: 'Perform static stretches for 20-30 seconds each to improve flexibility and reduce stiffness.'
         }
       ]
     },
@@ -48,6 +57,14 @@ export default function ResourcesPage() {
         {
           question: 'How can we prevent overuse injuries?',
           answer: 'Limit training hours, ensure proper rest days, and encourage cross-training to avoid repetitive stress on the same body parts.'
+        },
+        {
+          question: 'What are the most common injury types?',
+          answer: 'Ankle sprains, knee injuries (ACL sprains, patellar tendinitis), growth plate injuries, and overuse injuries like stress fractures and "Little League" elbow/shoulder.'
+        },
+        {
+          question: 'When should I seek medical care?',
+          answer: 'Seek care if pain, swelling, or loss of motion lasts more than 48 hours or if a limp develops.'
         }
       ]
     },
@@ -65,6 +82,14 @@ export default function ResourcesPage() {
         {
           question: 'How do I know if it\'s just a sprain or something more serious?',
           answer: 'If pain persists beyond 48 hours, swelling is severe, or there\'s significant bruising, consult a doctor.'
+        },
+        {
+          question: 'What requires immediate medical attention?',
+          answer: 'Go immediately for severe pain, inability to bear weight, obvious deformity, suspected fracture, head injury with confusion/vomiting, or numbness/tingling in limbs.'
+        },
+        {
+          question: 'When should I see a doctor within 24-48 hours?',
+          answer: 'See a doctor if pain/swelling persists despite rest and ice, recurrent joint instability, or declining sports performance due to discomfort.'
         }
       ]
     },
@@ -82,6 +107,14 @@ export default function ResourcesPage() {
         {
           question: 'How long should my child rest after an injury?',
           answer: 'Rest duration depends on injury severity, but generally 1-2 weeks for mild injuries, longer for moderate to severe injuries.'
+        },
+        {
+          question: 'What should I do during recovery?',
+          answer: 'Follow your healthcare provider\'s treatment plan, gradually reintroduce activity under supervision, maintain fitness with safe cross-training, and stay consistent with rehab exercises.'
+        },
+        {
+          question: 'What should I avoid during recovery?',
+          answer: 'Don\'t rush back into full activity, ignore pain or swelling, skip rest days, or self-diagnose without professional input.'
         }
       ]
     },
@@ -99,6 +132,14 @@ export default function ResourcesPage() {
         {
           question: 'When can my child return to sports after a concussion?',
           answer: 'Return should be gradual and only after all symptoms have resolved and clearance is given by a healthcare professional.'
+        },
+        {
+          question: 'What are the main concussion symptoms?',
+          answer: 'Headache, dizziness, blurred vision, memory loss, confusion, trouble concentrating, sensitivity to light/noise, and nausea or vomiting.'
+        },
+        {
+          question: 'What should I do if concussion is suspected?',
+          answer: 'Remove athlete from play immediately, seek prompt medical evaluation, and do not return to sports the same day.'
         }
       ]
     },
@@ -116,6 +157,14 @@ export default function ResourcesPage() {
         {
           question: 'How can strength training help prevent injuries?',
           answer: 'Strength training builds muscle support around joints, improves balance, and enhances overall athletic performance while reducing injury risk.'
+        },
+        {
+          question: 'What are key prevention practices?',
+          answer: 'Warm up and cool down every session, use sport-specific conditioning, maintain proper technique, replace worn-out gear promptly, stay hydrated, and avoid overtraining.'
+        },
+        {
+          question: 'How can I prevent overuse injuries?',
+          answer: 'Schedule rest days, gradually increase training load, cross-train to reduce repetitive stress, and listen to your body\'s warning signs.'
         }
       ]
     },
@@ -133,6 +182,14 @@ export default function ResourcesPage() {
         {
           question: 'How much water should young athletes drink?',
           answer: 'Aim for 8-10 glasses daily, plus additional fluids during and after exercise to maintain proper hydration.'
+        },
+        {
+          question: 'What are key nutrients for recovery?',
+          answer: 'Protein for muscle repair, carbs for energy replenishment, healthy fats to reduce inflammation, and micronutrients like calcium, vitamin D, and iron for bone health.'
+        },
+        {
+          question: 'What are hydration best practices?',
+          answer: 'Drink water before, during, and after activity, use electrolyte drinks for prolonged exercise in heat, and avoid high-sugar beverages.'
         }
       ]
     },
@@ -150,6 +207,14 @@ export default function ResourcesPage() {
         {
           question: 'When should I seek professional help for my child\'s mental health?',
           answer: 'Seek help if your child shows signs of depression, anxiety, or significant changes in behavior that persist beyond the initial injury period.'
+        },
+        {
+          question: 'What are ways to support mental health during recovery?',
+          answer: 'Stay connected with teammates, set small achievable rehab goals, practice mindfulness or relaxation techniques, and seek support from counselors or sports psychologists if needed.'
+        },
+        {
+          question: 'How can I help my child stay motivated?',
+          answer: 'Celebrate small progress milestones, maintain social connections, focus on what they can do rather than what they can\'t, and set realistic recovery expectations.'
         }
       ]
     },
@@ -167,6 +232,14 @@ export default function ResourcesPage() {
         {
           question: 'How do I know if my child is ready to return?',
           answer: 'Readiness is determined by pain-free movement, restored strength and flexibility, and clearance from healthcare professionals.'
+        },
+        {
+          question: 'What should I check before return?',
+          answer: 'Full pain-free range of motion, equal strength compared to uninjured side, clearance from healthcare provider, and completion of sport-specific drills without discomfort.'
+        },
+        {
+          question: 'How should return be structured?',
+          answer: 'Return should be gradual - starting with non-contact drills and slowly increasing intensity before full competition.'
         }
       ]
     },
@@ -184,6 +257,39 @@ export default function ResourcesPage() {
         {
           question: 'How often should protective equipment be replaced?',
           answer: 'Replace equipment when it shows signs of wear, damage, or when your child outgrows it. Follow manufacturer guidelines for replacement schedules.'
+        },
+        {
+          question: 'What equipment is essential for different sports?',
+          answer: 'Helmets for biking, baseball, and contact sports; mouthguards for collision risk sports; shin guards for soccer/field hockey; properly fitted footwear for sport-specific demands.'
+        },
+        {
+          question: 'How can I ensure safe play practices?',
+          answer: 'Enforce rules to prevent dangerous play, ensure proper equipment fitting, teach proper technique, and maintain safe playing environments.'
+        }
+      ]
+    },
+    {
+      id: '11',
+      title: 'Detailed Warm-Up Routine',
+      icon: <Activity className="h-6 w-6" />,
+      description: 'Step-by-step warm-up protocol for optimal performance',
+      content: 'A comprehensive 10-15 minute warm-up routine that prepares young athletes for sports activities. This structured approach includes light cardio, dynamic stretching, and sport-specific drills.',
+      qa: [
+        {
+          question: 'What is the 3-phase warm-up structure?',
+          answer: 'Phase 1: Light cardio (3-5 min) - jogging, jump rope, or high knees. Phase 2: Dynamic stretching (5-7 min) - leg swings, lunges, arm circles. Phase 3: Sport-specific drills (2-3 min) - sprints, ball-handling, agility work.'
+        },
+        {
+          question: 'What are the best dynamic stretches?',
+          answer: 'Leg swings (forward/backward & side-to-side), walking lunges with twist, arm circles, butt kicks, and skips. Hold each for 10-15 seconds.'
+        },
+        {
+          question: 'How long should each warm-up phase last?',
+          answer: 'Light cardio: 3-5 minutes, Dynamic stretching: 5-7 minutes, Sport-specific drills: 2-3 minutes. Total warm-up time: 10-15 minutes.'
+        },
+        {
+          question: 'What should I do after activity?',
+          answer: 'Perform static stretches for 20-30 seconds each to improve flexibility and reduce stiffness. Focus on major muscle groups used during the activity.'
         }
       ]
     }
@@ -280,6 +386,7 @@ export default function ResourcesPage() {
           </>
         )}
       </div>
+      <ChatWidget />
     </div>
   );
 } 
