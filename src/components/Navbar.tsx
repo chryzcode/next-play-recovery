@@ -81,9 +81,9 @@ export default function Navbar() {
                 <Image
                   src="/logo.jpeg"
                   alt="Next Play Recovery logo"
-                  width={54}
-                  height={54}
-                  className="h-14 w-14 object-contain rounded"
+                  width={72}
+                  height={72}
+                  className="h-18 w-18 object-contain rounded-lg shadow-md"
                   priority
                 />
               </Link>
@@ -129,9 +129,9 @@ export default function Navbar() {
               <Image
                 src="/logo.jpeg"
                 alt="Next Play Recovery logo"
-                width={60}
-                height={60}
-                className="h-15 w-15 object-contain rounded"
+                width={70}
+                height={70}
+                className="h-20 w-20 object-contain rounded-lg shadow-md"
                 priority
               />
             </Link>

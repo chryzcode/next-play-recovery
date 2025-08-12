@@ -46,7 +46,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} pt-16`}>
         <Navbar />
+        <div className="mt-10">
         {children}
+        </div>
         <Toaster />
       </body>
     </html>

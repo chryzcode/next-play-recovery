@@ -77,6 +77,7 @@ export async function PUT(
 ) {
   try {
     await dbConnect();
+    console.log('🔄 PUT /api/injuries/[injuryId] - Updating injury');
 
     const token = request.cookies.get('token')?.value;
     if (!token) {
@@ -104,6 +105,13 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid injury ID format' }, { status: 400 });
     }
 
+    const requestBody = await request.json();
+    console.log('📨 Request body received:', { 
+      type: requestBody.type,
+      description: requestBody.description?.substring(0, 50) + '...',
+      photosCount: requestBody.photos?.length || 0
+    });
+
     const {
       type,
       description,
@@ -111,12 +119,21 @@ export async function PUT(
       location,
       severity,
       recoveryStatus,
-      notes
-    } = await request.json();
+      notes,
+      photos
+    } = requestBody;
 
     if (!type || !description || !location || !severity || !recoveryStatus) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Validate photos array if provided
+    if (photos && !Array.isArray(photos)) {
+      return NextResponse.json(
+        { error: 'Photos must be an array' },
         { status: 400 }
       );
     }
@@ -143,12 +160,19 @@ export async function PUT(
       return NextResponse.json({ error: 'Admins cannot edit injuries' }, { status: 403 });
     }
 
+    console.log('💾 Updating injury with data:', { 
+      type, 
+      description: description?.substring(0, 30) + '...',
+      photosCount: photos?.length || 0 
+    });
+
     const updatedInjury = await Injury.findByIdAndUpdate(
       injuryId,
-      { type, description, date, location, severity, recoveryStatus, notes },
+      { type, description, date, location, severity, recoveryStatus, notes, photos },
       { new: true }
     ).populate('child', 'name age parent');
 
+    console.log('✅ Injury updated successfully, new photos count:', updatedInjury.photos?.length || 0);
     return NextResponse.json({ injury: updatedInjury });
   } catch (error) {
     console.error('Error updating injury:', error);

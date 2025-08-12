@@ -70,18 +70,19 @@ export default function ChatWidget() {
         <button
           aria-label="Open chat"
           onClick={() => setIsOpen(true)}
-          className="rounded-full bg-blue-600 text-white p-4 shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 inline-flex items-center gap-2"
         >
-          <MessageSquare className="h-6 w-6" />
+          <MessageSquare className="h-4 w-4" />
+          Ask Recovery AI
         </button>
       )}
 
       {isOpen && (
         <div className="w-80 sm:w-96 h-[28rem] bg-white border border-gray-200 rounded-xl shadow-xl flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between bg-blue-600 text-white px-4 py-3">
+          <div className="flex items-center justify-between bg-orange-500 text-white px-4 py-3">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5" />
-              <span className="font-semibold">Injury Recovery Assistant</span>
+              <span className="font-semibold">Recovery AI Assistant</span>
             </div>
             <button
               aria-label="Close chat"
@@ -99,7 +100,7 @@ export default function ChatWidget() {
                   className={
                     'max-w-[80%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ' +
                     (m.role === 'user'
-                      ? 'bg-blue-600 text-white rounded-br-sm'
+                      ? 'bg-orange-500 text-white rounded-br-sm'
                       : 'bg-white text-gray-800 border border-gray-200 rounded-bl-sm')
                   }
                 >
@@ -129,7 +130,7 @@ export default function ChatWidget() {
               <button
                 onClick={sendMessage}
                 disabled={isLoading || !input.trim()}
-                className="inline-flex items-center justify-center bg-blue-600 text-white rounded-lg px-3 py-2 text-sm disabled:opacity-50 hover:bg-blue-700"
+                className="inline-flex items-center justify-center bg-orange-500 text-white rounded-lg px-3 py-2 text-sm disabled:opacity-50 hover:bg-orange-600"
               >
                 <Send className="h-4 w-4" />
               </button>

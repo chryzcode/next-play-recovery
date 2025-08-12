@@ -35,7 +35,9 @@ export default function EditInjuryPage() {
     severity: 'mild' as 'mild' | 'moderate' | 'severe',
     recoveryStatus: 'Resting' as 'Resting' | 'Light Activity' | 'Full Play',
     notes: '',
+    photos: [] as string[],
   });
+  const [isProcessingPhotos, setIsProcessingPhotos] = useState(false);
 
   useEffect(() => {
     fetchInjury();
@@ -57,6 +59,7 @@ export default function EditInjuryPage() {
           severity: data.injury.severity,
           recoveryStatus: data.injury.recoveryStatus,
           notes: data.injury.notes || '',
+          photos: data.injury.photos || [],
         });
       } else {
         toast.error('Failed to load injury details');
@@ -71,11 +74,52 @@ export default function EditInjuryPage() {
     }
   };
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsProcessingPhotos(true);
+      const files = Array.from(e.target.files);
+      let processedCount = 0;
+      
+      // Convert files to base64 and add to photos
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            setFormData(prev => ({
+              ...prev,
+              photos: [...prev.photos, reader.result]
+            }));
+          }
+          processedCount++;
+          if (processedCount === files.length) {
+            setIsProcessingPhotos(false);
+          }
+        };
+        reader.onerror = () => {
+          processedCount++;
+          if (processedCount === files.length) {
+            setIsProcessingPhotos(false);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      photos: prev.photos.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsSaving(true);
 
     try {
+      console.log('Submitting form data:', formData); // Debug log
+      
       const response = await fetch(`/api/injuries/${injuryId}`, {
         method: 'PUT',
         headers: {
@@ -90,13 +134,14 @@ export default function EditInjuryPage() {
         router.push(`/injuries/${injuryId}`);
       } else {
         const data = await response.json();
+        console.error('API error response:', data); // Debug log
         toast.error(data.error || 'Failed to update injury');
       }
     } catch (error) {
       console.error('Error updating injury:', error);
       toast.error('An error occurred while updating the injury');
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -273,6 +318,71 @@ export default function EditInjuryPage() {
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(formData.recoveryStatus)}`}>
                   {formData.recoveryStatus}
                 </span>
+              </div>
+            </div>
+
+            {/* Photos */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Injury Photos
+              </label>
+              
+              {/* Current Photos Display */}
+              {formData.photos.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 mb-3">Current photos:</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {formData.photos.map((photo, index) => (
+                      <div key={index} className="relative bg-gray-100 rounded-lg overflow-hidden">
+                        <img
+                          src={photo}
+                          alt={`Injury photo ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removePhoto(index)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Photo Upload */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                {isProcessingPhotos ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-2"></div>
+                    <span className="text-blue-600 text-sm">Processing photos...</span>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="mx-auto h-8 w-8 text-gray-400" />
+                    <div className="mt-2">
+                      <label htmlFor="photos" className="cursor-pointer">
+                        <span className="text-blue-600 hover:text-blue-700 font-medium text-sm">
+                          {formData.photos.length > 0 ? 'Add More Photos' : 'Upload Photos'}
+                        </span>
+                        <input
+                          id="photos"
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handlePhotoChange}
+                          className="hidden"
+                          disabled={isProcessingPhotos}
+                        />
+                      </label>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Click to add more photos
+                    </p>
+                  </>
+                )}
               </div>
             </div>
 
