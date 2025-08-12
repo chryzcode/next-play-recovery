@@ -46,8 +46,8 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setFormData({ ...formData, photos: [file] });
+      const files = Array.from(e.target.files);
+      setFormData({ ...formData, photos: [...formData.photos, ...files] });
     }
   };
 
@@ -285,19 +285,20 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
                 <div className="mt-4">
                   <label htmlFor="photos" className="cursor-pointer">
                     <span className="btn-primary inline-flex items-center">
-                      Upload Photo
+                      Upload Photos
                     </span>
                     <input
                       id="photos"
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handlePhotoChange}
                       className="hidden"
                     />
                   </label>
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
-                  Upload a photo of the injury (optional)
+                  Upload photos of the injury (optional, multiple allowed)
                 </p>
                 
                 {/* Privacy Notice */}
@@ -315,22 +316,26 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
                 </div>
               </div>
 
-              {/* Display uploaded photo */}
+              {/* Display uploaded photos */}
               {formData.photos.length > 0 && (
                 <div className="mt-4">
-                  <div className="relative bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-                    <img
-                      src={URL.createObjectURL(formData.photos[0])}
-                      alt="Injury photo"
-                      className="w-full h-64 object-contain rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removePhoto(0)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
-                    >
-                      ×
-                    </button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {formData.photos.map((photo, index) => (
+                      <div key={index} className="relative bg-gray-100 rounded-lg overflow-hidden">
+                        <img
+                          src={URL.createObjectURL(photo)}
+                          alt={`Injury photo ${index + 1}`}
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removePhoto(index)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
