@@ -29,7 +29,14 @@ interface ExportChild {
     name: string;
     email: string;
   };
-  injuries: string[];
+  injuries: Array<{
+    type: string;
+    date: string;
+    severity: string;
+    recoveryStatus: string;
+    photos: string[];
+    notes: string;
+  }>;
   createdAt: string;
 }
 
@@ -51,11 +58,14 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'csv';
 
-    // Get all children with parent information
+    // Get all children with parent information and injuries, sorted chronologically
     const children = await Child.find()
       .populate('parent', 'name email')
-      .populate('injuries')
-      .sort({ createdAt: -1 });
+      .populate({
+        path: 'injuries',
+        options: { sort: { date: 1, createdAt: 1 } } // Sort injuries chronologically
+      })
+      .sort({ createdAt: -1 }); // Sort children by creation date
 
     if (format === 'csv') {
       return generateCSV(children);
@@ -83,23 +93,41 @@ function generateCSV(children: ExportChild[]) {
     'Parent Name',
     'Parent Email',
     'Injuries Count',
+    'Injury Details',
+    'Photo Links',
     'Created Date'
   ];
 
-  const rows = children.map(child => [
-    child.name || '',
-    child.age || '',
-    child.gender || '',
-    child.sport || '',
-    child.parent ? child.parent.name : 'N/A',
-    child.parent ? child.parent.email : 'N/A',
-    child.injuries ? child.injuries.length : 0,
-    new Date(child.createdAt).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    })
-  ]);
+  const rows = children.map(child => {
+    const injuryDetails = child.injuries && child.injuries.length > 0 
+      ? child.injuries.map(injury => 
+          `${injury.type} (${new Date(injury.date).toLocaleDateString()}) - ${injury.severity} - ${injury.recoveryStatus}`
+        ).join('; ')
+      : 'No injuries';
+    
+    const photoLinks = child.injuries && child.injuries.length > 0
+      ? child.injuries.flatMap(injury => 
+          injury.photos ? injury.photos : []
+        ).join('; ')
+      : 'No photos';
+
+    return [
+      child.name || '',
+      child.age || '',
+      child.gender || '',
+      child.sport || '',
+      child.parent ? child.parent.name : 'N/A',
+      child.parent ? child.parent.email : 'N/A',
+      child.injuries ? child.injuries.length : 0,
+      injuryDetails,
+      photoLinks,
+      new Date(child.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+    ];
+  });
 
   // Create CSV content with proper escaping and BOM for Excel compatibility
   const csvContent = [
@@ -335,6 +363,40 @@ async function generatePDF(children: ExportChild[]) {
             })}</span>
           </div>
         </div>
+        
+        ${child.injuries && child.injuries.length > 0 ? `
+        <div class="injuries-details" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+          <h3 style="color: #374151; font-size: 16px; margin-bottom: 10px;">Injury Details:</h3>
+          ${child.injuries.map((injury, injuryIndex) => `
+            <div class="injury-mini" style="background: #f9fafb; padding: 10px; margin-bottom: 8px; border-radius: 4px; border-left: 3px solid #2563eb;">
+              <div style="font-weight: 600; color: #111827; margin-bottom: 5px;">
+                ${injuryIndex + 1}. ${injury.type} - ${new Date(injury.date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </div>
+              <div style="font-size: 12px; color: #6b7280;">
+                <span style="color: ${injury.severity === 'severe' ? '#dc2626' : injury.severity === 'moderate' ? '#d97706' : '#059669'}; font-weight: 600;">
+                  ${injury.severity}
+                </span> | 
+                <span style="color: ${injury.recoveryStatus === 'Resting' ? '#dc2626' : injury.recoveryStatus === 'Light Activity' ? '#d97706' : '#059669'}; font-weight: 600;">
+                  ${injury.recoveryStatus}
+                </span>
+                ${injury.notes ? ` | Notes: ${injury.notes}` : ''}
+              </div>
+              ${injury.photos && injury.photos.length > 0 ? `
+              <div style="margin-top: 8px; font-size: 11px;">
+                <span style="color: #374151; font-weight: 600;">Photos (${injury.photos.length}):</span>
+                <div style="color: #2563eb; word-break: break-all; margin-top: 2px;">
+                  ${injury.photos.map((photo, photoIdx) => `<div>${photoIdx + 1}. ${photo}</div>`).join('')}
+                </div>
+              </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
       </div>
     `).join('')}
   </div>

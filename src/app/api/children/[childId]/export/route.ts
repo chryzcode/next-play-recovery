@@ -30,7 +30,10 @@ interface ExportInjury {
   recoveryStatus: string;
   progressPercentage?: number;
   notes: string;
+  photos: string[];
+  suggestedTimeline: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export async function GET(
@@ -98,8 +101,12 @@ function generateCSV(child: ExportChild, injuries: ExportInjury[]) {
     'Severity',
     'Recovery Status',
     'Progress %',
+    'Photos Count',
+    'Photo Links',
     'Notes',
-    'Created Date'
+    'Suggested Timeline (Days)',
+    'Created Date',
+    'Last Updated'
   ];
 
   const rows = injuries.map(injury => [
@@ -114,8 +121,16 @@ function generateCSV(child: ExportChild, injuries: ExportInjury[]) {
     injury.severity || '',
     injury.recoveryStatus || '',
     injury.progressPercentage ? `${injury.progressPercentage}%` : '0%',
+    injury.photos ? injury.photos.length : 0,
+    injury.photos && injury.photos.length > 0 ? injury.photos.join('; ') : 'No photos',
     injury.notes || '',
+    injury.suggestedTimeline || 0,
     new Date(injury.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }),
+    new Date(injury.updatedAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
@@ -391,12 +406,42 @@ async function generatePDF(child: ExportChild, injuries: ExportInjury[]) {
             <span class="injury-label">Description:</span>
             <span class="injury-value">${injury.description}</span>
           </div>
-          ${injury.notes ? `
+          <div class="injury-item">
+            <span class="injury-label">Photos:</span>
+            <span class="injury-value">${injury.photos ? injury.photos.length : 0} photo(s)</span>
+          </div>
+          ${injury.photos && injury.photos.length > 0 ? `
           <div class="injury-item" style="grid-column: 1 / -1;">
-            <span class="injury-label">Notes:</span>
-            <span class="injury-value">${injury.notes}</span>
+            <span class="injury-label">Photo Links:</span>
+            <div class="injury-value" style="word-break: break-all; font-size: 11px; color: #2563eb;">
+              ${injury.photos.map((photo, idx) => `<div>${idx + 1}. ${photo}</div>`).join('')}
+            </div>
           </div>
           ` : ''}
+          <div class="injury-item">
+            <span class="injury-label">Suggested Timeline:</span>
+            <span class="injury-value">${injury.suggestedTimeline || 0} days</span>
+          </div>
+          <div class="injury-item">
+            <span class="injury-label">Notes:</span>
+            <span class="injury-value">${injury.notes || 'No notes'}</span>
+          </div>
+          <div class="injury-item">
+            <span class="injury-label">Created:</span>
+            <span class="injury-value">${new Date(injury.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}</span>
+          </div>
+          <div class="injury-item">
+            <span class="injury-label">Last Updated:</span>
+            <span class="injury-value">${new Date(injury.updatedAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}</span>
+          </div>
         </div>
       </div>
     `).join('')}

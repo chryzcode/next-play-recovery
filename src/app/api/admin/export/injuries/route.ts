@@ -33,6 +33,9 @@ interface ExportInjury {
   location: string;
   severity: string;
   recoveryStatus: string;
+  photos: string[];
+  notes: string;
+  suggestedTimeline: number;
   child?: {
     name: string;
     age: number;
@@ -42,10 +45,12 @@ interface ExportInjury {
     };
   };
   createdAt: string;
+  updatedAt: string;
 }
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('🔄 Starting injuries export...');
     await dbConnect();
 
     // Verify authentication and admin role
@@ -62,7 +67,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'csv';
 
-    // Get all injuries with child and parent information
+    // Get all injuries with child and parent information, sorted chronologically
     const injuries = await Injury.find()
       .populate({
         path: 'child',
@@ -72,11 +77,15 @@ export async function GET(request: NextRequest) {
           select: 'name email'
         }
       })
-      .sort({ date: -1 });
+      .sort({ date: 1, createdAt: 1 }); // Sort by date ascending (oldest first), then by creation date
 
+    console.log(`📊 Found ${injuries.length} injuries for export`);
+    
     if (format === 'csv') {
+      console.log('📄 Generating CSV export...');
       return generateCSV(injuries);
     } else if (format === 'pdf') {
+      console.log('📄 Generating PDF export...');
       return await generatePDF(injuries);
     } else {
       return NextResponse.json({ error: 'Invalid format. Use csv or pdf' }, { status: 400 });
@@ -99,11 +108,16 @@ function generateCSV(injuries: ExportInjury[]) {
     'Location',
     'Severity',
     'Recovery Status',
+    'Photos Count',
+    'Photo Links',
+    'Notes',
+    'Suggested Timeline (Days)',
     'Child Name',
     'Child Age',
     'Parent Name',
     'Parent Email',
-    'Created Date'
+    'Created Date',
+    'Last Updated'
   ];
 
   const rows = injuries.map(injury => [
@@ -117,11 +131,20 @@ function generateCSV(injuries: ExportInjury[]) {
     injury.location || '',
     injury.severity || '',
     injury.recoveryStatus || '',
+    injury.photos ? injury.photos.length : 0,
+    injury.photos && injury.photos.length > 0 ? injury.photos.join('; ') : 'No photos',
+    injury.notes || '',
+    injury.suggestedTimeline || 0,
     injury.child ? injury.child.name : 'N/A',
     injury.child ? injury.child.age : 'N/A',
     injury.child && injury.child.parent ? injury.child.parent.name : 'N/A',
     injury.child && injury.child.parent ? injury.child.parent.email : 'N/A',
     new Date(injury.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }),
+    new Date(injury.updatedAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
@@ -158,6 +181,8 @@ function generateCSV(injuries: ExportInjury[]) {
 async function generatePDF(injuries: ExportInjury[]) {
   let browser;
   try {
+    console.log('🚀 Launching Puppeteer for PDF generation...');
+    
     // Launch puppeteer with proper configuration
     browser = await puppeteer.launch({
       headless: true,
@@ -172,6 +197,8 @@ async function generatePDF(injuries: ExportInjury[]) {
         '--disable-gpu'
       ]
     });
+    
+    console.log('✅ Puppeteer launched successfully');
     
     const page = await browser.newPage();
     
@@ -392,6 +419,42 @@ async function generatePDF(injuries: ExportInjury[]) {
           <div class="injury-item" style="grid-column: 1 / -1;">
             <span class="injury-label">Description:</span>
             <span class="injury-value">${injury.description}</span>
+          </div>
+          <div class="injury-item" style="grid-column: 1 / -1;">
+            <span class="injury-label">Notes:</span>
+            <span class="injury-value">${injury.notes || 'No notes'}</span>
+          </div>
+          <div class="injury-item">
+            <span class="injury-label">Photos:</span>
+            <span class="injury-value">${injury.photos ? injury.photos.length : 0} photo(s)</span>
+          </div>
+          ${injury.photos && injury.photos.length > 0 ? `
+          <div class="injury-item" style="grid-column: 1 / -1;">
+            <span class="injury-label">Photo Links:</span>
+            <div class="injury-value" style="word-break: break-all; font-size: 11px; color: #2563eb;">
+              ${injury.photos.map((photo, idx) => `<div>${idx + 1}. ${photo}</div>`).join('')}
+            </div>
+          </div>
+          ` : ''}
+          <div class="injury-item">
+            <span class="injury-label">Suggested Timeline:</span>
+            <span class="injury-value">${injury.suggestedTimeline || 0} days</span>
+          </div>
+          <div class="injury-item">
+            <span class="injury-label">Created:</span>
+            <span class="injury-value">${new Date(injury.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}</span>
+          </div>
+          <div class="injury-item">
+            <span class="injury-label">Last Updated:</span>
+            <span class="injury-value">${new Date(injury.updatedAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}</span>
           </div>
         </div>
       </div>
