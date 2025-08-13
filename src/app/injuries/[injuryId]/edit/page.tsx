@@ -74,35 +74,44 @@ export default function EditInjuryPage() {
     }
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setIsProcessingPhotos(true);
       const files = Array.from(e.target.files);
-      let processedCount = 0;
       
-      // Convert files to base64 and add to photos
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          if (typeof reader.result === 'string') {
+      try {
+        // Create FormData for upload
+        const formData = new FormData();
+        files.forEach(file => {
+          formData.append('images', file);
+        });
+
+        // Upload to Cloudinary via our API
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.urls) {
+            // Add the new Cloudinary URLs to photos
             setFormData(prev => ({
               ...prev,
-              photos: [...prev.photos, reader.result]
+              photos: [...prev.photos, ...result.urls]
             }));
+            toast.success(`Successfully uploaded ${result.urls.length} image(s)`);
           }
-          processedCount++;
-          if (processedCount === files.length) {
-            setIsProcessingPhotos(false);
-          }
-        };
-        reader.onerror = () => {
-          processedCount++;
-          if (processedCount === files.length) {
-            setIsProcessingPhotos(false);
-          }
-        };
-        reader.readAsDataURL(file);
-      });
+        } else {
+          toast.error('Failed to upload images');
+        }
+      } catch (error) {
+        console.error('Error uploading images:', error);
+        toast.error('Error uploading images');
+      } finally {
+        setIsProcessingPhotos(false);
+      }
     }
   };
 

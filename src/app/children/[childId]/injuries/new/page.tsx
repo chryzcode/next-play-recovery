@@ -15,7 +15,7 @@ interface InjuryFormData {
   location: string;
   severity: 'mild' | 'moderate' | 'severe';
   notes: string;
-  photos: File[];
+  photos: string[];
 }
 
 export default function NewInjuryPage({ params }: { params: Promise<{ childId: string }> }) {
@@ -44,10 +44,41 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
     }
   }, [formData.type]);
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const files = Array.from(e.target.files);
-      setFormData({ ...formData, photos: [...formData.photos, ...files] });
+      
+      try {
+        // Create FormData for upload
+        const formDataUpload = new FormData();
+        files.forEach(file => {
+          formDataUpload.append('images', file);
+        });
+
+        // Upload to Cloudinary via our API
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formDataUpload,
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.urls) {
+            // Add the new Cloudinary URLs to photos
+            setFormData(prev => ({
+              ...prev,
+              photos: [...prev.photos, ...result.urls]
+            }));
+            toast.success(`Successfully uploaded ${result.urls.length} image(s)`);
+          }
+        } else {
+          toast.error('Failed to upload images');
+        }
+      } catch (error) {
+        console.error('Error uploading images:', error);
+        toast.error('Error uploading images');
+      }
     }
   };
 
@@ -56,20 +87,7 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
     setFormData({ ...formData, photos: newPhotos });
   };
 
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          resolve(reader.result);
-        } else {
-          reject(new Error('Failed to convert file to base64'));
-        }
-      };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsDataURL(file);
-    });
-  };
+
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -98,15 +116,6 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
     const loadingToast = toast.loading('Creating injury record...');
 
     try {
-      // Convert photos to base64 for upload
-      const photoUrls: string[] = [];
-      if (formData.photos.length > 0) {
-        for (const photo of formData.photos) {
-          const base64 = await convertFileToBase64(photo);
-          photoUrls.push(base64);
-        }
-      }
-
       const injuryData = {
         childId: childId,
         type: formData.type,
@@ -115,7 +124,7 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
         location: formData.location,
         severity: formData.severity,
         notes: formData.notes,
-        photos: photoUrls,
+        photos: formData.photos,
         suggestedTimeline: suggestedTimeline?.suggestedDays || 7,
       };
 
@@ -323,7 +332,7 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
                     {formData.photos.map((photo, index) => (
                       <div key={index} className="relative bg-gray-100 rounded-lg overflow-hidden">
                         <img
-                          src={URL.createObjectURL(photo)}
+                          src={photo}
                           alt={`Injury photo ${index + 1}`}
                           className="w-full h-48 object-cover rounded-lg"
                         />
