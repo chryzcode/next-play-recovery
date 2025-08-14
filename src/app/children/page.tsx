@@ -89,31 +89,6 @@ export default function ChildrenPage() {
     }
   };
 
-  const handleExport = async (childId: string, format: 'csv' | 'pdf') => {
-    try {
-      const response = await fetch(`/api/children/${childId}/export?format=${format}`, {
-        credentials: 'include'
-      });
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = response.headers.get('content-disposition')?.split('filename=')[1]?.replace(/"/g, '') || `export.${format}`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        toast.success(`${format.toUpperCase()} export successful`);
-      } else {
-        toast.error('Export failed');
-      }
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('An error occurred during export');
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -242,20 +217,20 @@ export default function ChildrenPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500">Export History:</span>
                       <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleExport(child._id, 'csv')}
+                        <Link
+                          href={`/api/children/${child._id}/export?format=csv`}
                           className="flex items-center text-xs text-gray-600 hover:text-blue-600 font-medium"
                         >
                           <Download className="h-3 w-3 mr-1" />
                           CSV
-                        </button>
-                        <button
-                          onClick={() => handleExport(child._id, 'pdf')}
+                        </Link>
+                        <Link
+                          href={`/api/children/${child._id}/export?format=pdf`}
                           className="flex items-center text-xs text-gray-600 hover:text-blue-600 font-medium"
                         >
                           <FileText className="h-3 w-3 mr-1" />
                           PDF
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </div>

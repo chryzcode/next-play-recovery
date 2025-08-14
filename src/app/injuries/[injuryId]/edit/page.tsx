@@ -406,7 +406,7 @@ export default function EditInjuryPage() {
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
-                placeholder="Any additional information about the injury or treatment"
+                placeholder="Include date, progress, and any observations, symptom changes, or questions. Example: 06/20 – Able to jog without pain."
               />
             </div>
 
