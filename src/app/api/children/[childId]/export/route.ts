@@ -3,8 +3,8 @@ import dbConnect from '@/lib/mongodb';
 import Child from '@/models/Child';
 import Injury from '@/models/Injury';
 import { verifyToken } from '@/lib/auth';
-import puppeteer from 'puppeteer';
 import User from '@/models/User';
+import jsPDF from 'jspdf';
 
 interface ExportChild {
   _id: string;
@@ -169,305 +169,211 @@ function generateCSV(child: ExportChild, injuries: ExportInjury[]) {
 }
 
 async function generatePDF(child: ExportChild, injuries: ExportInjury[]) {
-  let browser;
   try {
-    // Launch puppeteer with proper configuration
-    browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--single-process',
-        '--disable-gpu'
-      ]
+    // Create new PDF document
+    const doc = new jsPDF();
+    
+    // Set document properties
+    doc.setProperties({
+      title: `${child.name} - Injury History Report`,
+      subject: 'Youth Sports Injury Tracking Report',
+      author: 'Next Play Recovery',
+      creator: 'Next Play Recovery System'
     });
+
+    // Add header
+    doc.setFontSize(24);
+    doc.setTextColor(37, 99, 235); // Blue color
+    doc.text('Child Injury History Report', 105, 20, { align: 'center' });
     
-    const page = await browser.newPage();
-    
-    // Set viewport for consistent rendering
-    await page.setViewport({ width: 1200, height: 800 });
-    
-    // Generate HTML content for PDF
-    const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Child Injury History Report</title>
-  <style>
-    @page {
-      margin: 1in;
-      size: A4;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 20px;
-      line-height: 1.6;
-      color: #333;
-    }
-    .header {
-      text-align: center;
-      border-bottom: 3px solid #2563eb;
-      padding-bottom: 20px;
-      margin-bottom: 30px;
-    }
-    .header h1 {
-      color: #2563eb;
-      margin: 0;
-      font-size: 28px;
-    }
-    .header p {
-      color: #666;
-      margin: 5px 0 0 0;
-      font-size: 14px;
-    }
-    .child-info {
-      background-color: #f8fafc;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-      border-left: 4px solid #2563eb;
-    }
-    .child-info h2 {
-      color: #2563eb;
-      margin: 0 0 15px 0;
-      font-size: 20px;
-    }
-    .child-info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-    .info-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .info-item:last-child {
-      border-bottom: none;
-    }
-    .info-label {
-      font-weight: 600;
-      color: #374151;
-    }
-    .info-value {
-      color: #111827;
-    }
-    .injuries-section h2 {
-      color: #2563eb;
-      margin: 0 0 20px 0;
-      font-size: 20px;
-    }
-    .injury {
-      border: 1px solid #d1d5db;
-      padding: 20px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      background-color: #ffffff;
-    }
-    .injury-header {
-      font-weight: bold;
-      color: #111827;
-      margin-bottom: 15px;
-      font-size: 18px;
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 8px;
-    }
-    .injury-details {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-    .injury-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 5px 0;
-    }
-    .injury-label {
-      font-weight: 600;
-      color: #374151;
-    }
-    .injury-value {
-      color: #111827;
-    }
-    .severity-mild { 
-      color: #059669; 
-      font-weight: 600;
-    }
-    .severity-moderate { 
-      color: #d97706; 
-      font-weight: 600;
-    }
-    .severity-severe { 
-      color: #dc2626; 
-      font-weight: 600;
-    }
-    .status-resting { 
-      color: #dc2626; 
-      font-weight: 600;
-    }
-    .status-light { 
-      color: #d97706; 
-      font-weight: 600;
-    }
-    .status-full { 
-      color: #059669; 
-      font-weight: 600;
-    }
-    .no-injuries {
-      text-align: center;
-      padding: 40px;
-      color: #6b7280;
-      font-style: italic;
-    }
-    .footer {
-      margin-top: 40px;
-      text-align: center;
-      color: #6b7280;
-      font-size: 12px;
-      border-top: 1px solid #e5e7eb;
-      padding-top: 20px;
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>Child Injury History Report</h1>
-    <p>Generated on ${new Date().toLocaleDateString('en-US', {
+    doc.setFontSize(12);
+    doc.setTextColor(107, 114, 128); // Gray color
+    doc.text(`Generated on ${new Date().toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
-    })}</p>
-  </div>
-  
-  <div class="child-info">
-    <h2>Child Information</h2>
-    <div class="child-info-grid">
-      <div class="info-item">
-        <span class="info-label">Name:</span>
-        <span class="info-value">${child.name}</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Age:</span>
-        <span class="info-value">${child.age} years old</span>
-      </div>
-      ${child.gender ? `
-      <div class="info-item">
-        <span class="info-label">Gender:</span>
-        <span class="info-value">${child.gender}</span>
-      </div>
-      ` : ''}
-      ${child.sport ? `
-      <div class="info-item">
-        <span class="info-label">Primary Sport:</span>
-        <span class="info-value">${child.sport}</span>
-      </div>
-      ` : ''}
-    </div>
-  </div>
-  
-  <div class="injuries-section">
-    <h2>Injury History (${injuries.length} total)</h2>
-    ${injuries.length === 0 ? '<div class="no-injuries">No injuries recorded for this child.</div>' : injuries.map((injury, index) => `
-      <div class="injury">
-        <div class="injury-header">${index + 1}. ${injury.type}</div>
-        <div class="injury-details">
-          <div class="injury-item">
-            <span class="injury-label">Date:</span>
-            <span class="injury-value">${new Date(injury.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}</span>
-          </div>
-          <div class="injury-item">
-            <span class="injury-label">Location:</span>
-            <span class="injury-value">${injury.location}</span>
-          </div>
-          <div class="injury-item">
-            <span class="injury-label">Severity:</span>
-            <span class="injury-value severity-${injury.severity}">${injury.severity}</span>
-          </div>
-          <div class="injury-item">
-            <span class="injury-label">Status:</span>
-            <span class="injury-value status-${injury.recoveryStatus.toLowerCase().replace(' ', '')}">${injury.recoveryStatus}</span>
-          </div>
-          <div class="injury-item">
-            <span class="injury-label">Progress:</span>
-            <span class="injury-value">${injury.progressPercentage ? `${injury.progressPercentage}%` : '0%'}</span>
-          </div>
-          <div class="injury-item">
-            <span class="injury-label">Description:</span>
-            <span class="injury-value">${injury.description}</span>
-          </div>
-          <div class="injury-item">
-            <span class="injury-label">Photos:</span>
-            <span class="injury-value">${injury.photos ? injury.photos.length : 0} photo(s)</span>
-          </div>
-          ${injury.photos && injury.photos.length > 0 ? `
-          <div class="injury-item" style="grid-column: 1 / -1;">
-            <span class="injury-label">Photo Links:</span>
-            <div class="injury-value" style="word-break: break-all; font-size: 11px; color: #2563eb;">
-              ${injury.photos.map((photo, idx) => `<div>${idx + 1}. ${photo}</div>`).join('')}
-            </div>
-          </div>
-          ` : ''}
-          <div class="injury-item">
-            <span class="injury-label">Suggested Timeline:</span>
-            <span class="injury-value">${injury.suggestedTimeline || 0} days</span>
-          </div>
-          <div class="injury-item">
-            <span class="injury-label">Notes:</span>
-            <span class="injury-value">${injury.notes || 'No notes'}</span>
-          </div>
-          <div class="injury-item">
-            <span class="injury-label">Created:</span>
-            <span class="injury-value">${new Date(injury.createdAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'
-            })}</span>
-          </div>
-          <div class="injury-item">
-            <span class="injury-label">Last Updated:</span>
-            <span class="injury-value">${new Date(injury.updatedAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'
-            })}</span>
-          </div>
-        </div>
-      </div>
-    `).join('')}
-  </div>
-  
-  <div class="footer">
-    <p>This report was generated by Next Play Recovery - Youth Sports Injury Tracking System</p>
-    <p>For questions or support, please contact your healthcare provider</p>
-  </div>
-</body>
-</html>`;
+    })}`, 105, 30, { align: 'center' });
 
-    // Set content and generate PDF
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+    // Add child information section
+    doc.setFontSize(16);
+    doc.setTextColor(37, 99, 235);
+    doc.text('Child Information', 20, 50);
     
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '0.5in',
-        right: '0.5in',
-        bottom: '0.5in',
-        left: '0.5in'
-      }
-    });
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    
+    let yPosition = 65;
+    doc.text(`Name: ${child.name}`, 20, yPosition);
+    yPosition += 8;
+    doc.text(`Age: ${child.age} years old`, 20, yPosition);
+    yPosition += 8;
+    
+    if (child.gender) {
+      doc.text(`Gender: ${child.gender}`, 20, yPosition);
+      yPosition += 8;
+    }
+    
+    if (child.sport) {
+      doc.text(`Primary Sport: ${child.sport}`, 20, yPosition);
+      yPosition += 8;
+    }
+    
+    yPosition += 10;
 
+    // Add injuries section
+    doc.setFontSize(16);
+    doc.setTextColor(37, 99, 235);
+    doc.text(`Injury History (${injuries.length} total)`, 20, yPosition);
+    yPosition += 15;
+
+    if (injuries.length === 0) {
+      doc.setFontSize(12);
+      doc.setTextColor(107, 114, 128);
+      doc.text('No injuries recorded for this child.', 20, yPosition);
+    } else {
+      // Add injuries table
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      
+      // Table headers
+      const headers = ['Type', 'Date', 'Location', 'Severity', 'Status', 'Progress'];
+      const columnWidths = [35, 25, 30, 25, 30, 25];
+      let xPosition = 20;
+      
+      // Draw header row
+      doc.setFillColor(248, 250, 252); // Light blue background
+      doc.rect(xPosition - 2, yPosition - 8, 170, 10, 'F');
+      
+      doc.setFontSize(10);
+      doc.setTextColor(55, 65, 81);
+      doc.setFont(undefined, 'bold');
+      
+      headers.forEach((header, index) => {
+        doc.text(header, xPosition, yPosition);
+        xPosition += columnWidths[index];
+      });
+      
+      yPosition += 15;
+      doc.setFont(undefined, 'normal');
+      doc.setTextColor(0, 0, 0);
+
+      // Add injury rows
+      injuries.forEach((injury, index) => {
+        // Check if we need a new page
+        if (yPosition > 250) {
+          doc.addPage();
+          yPosition = 20;
+        }
+
+        xPosition = 20;
+        
+        // Draw row background
+        const backgroundColor = index % 2 === 0 ? [255, 255, 255] : [249, 250, 251];
+        doc.setFillColor(backgroundColor[0], backgroundColor[1], backgroundColor[2]);
+        doc.rect(xPosition - 2, yPosition - 8, 170, 10, 'F');
+        
+        // Injury type
+        doc.text(injury.type || 'N/A', xPosition, yPosition);
+        xPosition += columnWidths[0];
+        
+        // Date
+        const injuryDate = new Date(injury.date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        doc.text(injuryDate, xPosition, yPosition);
+        xPosition += columnWidths[1];
+        
+        // Location
+        doc.text(injury.location || 'N/A', xPosition, yPosition);
+        xPosition += columnWidths[2];
+        
+        // Severity with color coding
+        const severityColor = injury.severity === 'severe' ? [220, 38, 38] : 
+                             injury.severity === 'moderate' ? [217, 119, 6] : [5, 150, 105];
+        doc.setTextColor(severityColor[0], severityColor[1], severityColor[2]);
+        doc.text(injury.severity || 'N/A', xPosition, yPosition);
+        xPosition += columnWidths[3];
+        doc.setTextColor(0, 0, 0);
+        
+        // Recovery status
+        doc.text(injury.recoveryStatus || 'N/A', xPosition, yPosition);
+        xPosition += columnWidths[4];
+        
+        // Progress
+        const progress = injury.progressPercentage ? `${injury.progressPercentage}%` : '0%';
+        doc.text(progress, xPosition, yPosition);
+        
+        yPosition += 15;
+        
+        // Add description and notes if there's space
+        if (yPosition < 250) {
+          if (injury.description) {
+            doc.setFontSize(9);
+            doc.setTextColor(107, 114, 128);
+            const description = doc.splitTextToSize(`Description: ${injury.description}`, 160);
+            description.forEach(line => {
+              if (yPosition < 250) {
+                doc.text(line, 25, yPosition);
+                yPosition += 5;
+              }
+            });
+          }
+          
+          if (injury.notes) {
+            doc.setFontSize(9);
+            doc.setTextColor(107, 114, 128);
+            const notes = doc.splitTextToSize(`Notes: ${injury.notes}`, 160);
+            notes.forEach(line => {
+              if (yPosition < 250) {
+                doc.text(line, 25, yPosition);
+                yPosition += 5;
+              }
+            });
+          }
+          
+          // Add photo links if there's space
+          if (injury.photos && injury.photos.length > 0) {
+            doc.setFontSize(9);
+            doc.setTextColor(37, 99, 235); // Blue color for links
+            doc.text(`Photos (${injury.photos.length}):`, 25, yPosition);
+            yPosition += 5;
+            
+            injury.photos.forEach((photo, photoIndex) => {
+              if (yPosition < 250) {
+                const photoText = `${photoIndex + 1}. ${photo}`;
+                const photoLines = doc.splitTextToSize(photoText, 160);
+                photoLines.forEach(line => {
+                  if (yPosition < 250) {
+                    doc.text(line, 30, yPosition);
+                    yPosition += 4;
+                  }
+                });
+              }
+            });
+            
+            doc.setTextColor(107, 114, 128); // Reset to gray
+          }
+          
+          yPosition += 8;
+        }
+      });
+    }
+
+    // Add footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10);
+      doc.setTextColor(107, 114, 128);
+      doc.text('Next Play Recovery - Youth Sports Injury Tracking System', 105, 290, { align: 'center' });
+      doc.text(`Page ${i} of ${pageCount}`, 105, 295, { align: 'center' });
+    }
+
+    // Generate PDF buffer
+    const pdfBuffer = doc.output('arraybuffer');
+    
     return new NextResponse(pdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
@@ -477,13 +383,8 @@ async function generatePDF(child: ExportChild, injuries: ExportInjury[]) {
 
   } catch (error) {
     console.error('Error generating PDF:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate PDF. Please try again.' },
-      { status: 500 }
-    );
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
+    // Fallback to CSV if PDF generation fails
+    console.log('PDF generation failed, falling back to CSV');
+    return generateCSV(child, injuries);
   }
 } 
