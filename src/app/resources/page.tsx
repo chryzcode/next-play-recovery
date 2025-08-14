@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, BookOpen, Shield, Activity, Users, Heart, Brain, Utensils, Target, Zap } from 'lucide-react';
 import ChatWidget from '@/components/ChatWidget';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Resource {
   id: string;
@@ -16,6 +18,28 @@ interface Resource {
 
 export default function ResourcesPage() {
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isLoading, router]);
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Redirect if not authenticated
+  if (!user) {
+    return null;
+  }
 
   const resources: Resource[] = [
     {

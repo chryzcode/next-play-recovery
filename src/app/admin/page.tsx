@@ -98,30 +98,7 @@ export default function AdminDashboardPage() {
     fetchStats();
   }, []);
 
-  const handleExport = async (type: 'children' | 'injuries', format: 'csv' | 'pdf') => {
-    try {
-      const response = await fetch(`/api/admin/export/${type}?format=${format}`, {
-        credentials: 'include'
-      });
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${type}-${format}.${format === 'csv' ? 'csv' : 'pdf'}`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        toast.success(`${type} exported successfully as ${format.toUpperCase()}`);
-      } else {
-        toast.error('Export failed');
-      }
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('An error occurred during export');
-    }
-  };
+
 
   if (!user || user.role !== 'admin') {
     return (
@@ -341,20 +318,20 @@ export default function AdminDashboardPage() {
               </div>
               <p className="text-gray-600 mb-4">Export all children data including parent information and injury counts.</p>
               <div className="flex space-x-2">
-                <button
-                  onClick={() => handleExport('children', 'csv')}
+                <Link
+                  href={`/api/admin/export/children?format=csv`}
                   className="btn-secondary inline-flex items-center"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   Export CSV
-                </button>
-                <button
-                  onClick={() => handleExport('children', 'pdf')}
+                </Link>
+                <Link
+                  href={`/api/admin/export/children?format=pdf`}
                   className="btn-secondary inline-flex items-center"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   Export PDF
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -366,20 +343,20 @@ export default function AdminDashboardPage() {
               </div>
               <p className="text-gray-600 mb-4">Export all injury records including child and parent information.</p>
               <div className="flex space-x-2">
-                <button
-                  onClick={() => handleExport('injuries', 'csv')}
+                <Link
+                  href={`/api/admin/export/injuries?format=csv`}
                   className="btn-secondary inline-flex items-center"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   Export CSV
-                </button>
-                <button
-                  onClick={() => handleExport('injuries', 'pdf')}
+                </Link>
+                <Link
+                  href={`/api/admin/export/injuries?format=pdf`}
                   className="btn-secondary inline-flex items-center"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   Export PDF
-                </button>
+                </Link>
               </div>
             </div>
           </div>

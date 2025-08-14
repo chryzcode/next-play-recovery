@@ -107,12 +107,14 @@ export default function Navbar() {
         { name: 'Admin Dashboard', href: '/admin', icon: Settings },
         { name: 'Children', href: '/children', icon: Users },
         { name: 'Injuries', href: '/injuries', icon: Activity },
+        { name: 'Resources', href: '/resources', icon: BookOpen },
       ];
     } else {
       return [
         { name: 'Dashboard', href: '/dashboard', icon: Home },
         { name: 'Children', href: '/children', icon: Users },
         { name: 'Injuries', href: '/injuries', icon: Activity },
+        { name: 'Resources', href: '/resources', icon: BookOpen },
       ];
     }
   };
