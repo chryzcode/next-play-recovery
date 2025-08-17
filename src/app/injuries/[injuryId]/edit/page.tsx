@@ -393,6 +393,22 @@ export default function EditInjuryPage() {
                   </>
                 )}
               </div>
+
+              {/* Privacy Notice */}
+              <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
+                <div className="flex items-start">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 mr-2 flex-shrink-0" />
+                  <div className="text-sm text-yellow-800">
+                    <p className="font-medium">Privacy Notice</p>
+                    <p className="mt-1">
+                      Uploads are stored privately. Admins may view for support/maintenance. See{' '}
+                      <Link href="/legal" className="text-blue-600 hover:text-blue-500 underline">
+                        Terms & Privacy
+                      </Link>.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Notes */}
