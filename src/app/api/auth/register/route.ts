@@ -66,9 +66,10 @@ export async function POST(request: NextRequest) {
       isEmailVerified: false,
       emailVerificationToken: verificationToken,
       emailVerificationExpires: verificationExpires,
-      consent_agreed: consentAgreed,
-      consent_version: 'v1-2025-01-16',
-      consented_at: new Date(),
+      consent_text: 'I understand that Next Play Recovery (including the Resource Center) is for informational use only and not medical advice. I agree to the Terms of Use, Privacy Policy, and Disclaimer, consent to the storage of my data (including optional photos), and confirm I am 13 or older (with parent/guardian consent if under 18).',
+      consent_version: 'v1.0',
+      consent_timestamp: new Date(),
+      consent_accepted: consentAgreed,
       isThirteenOrOlder: isThirteenOrOlder,
     });
 

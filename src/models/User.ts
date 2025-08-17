@@ -11,9 +11,10 @@ export interface IUser extends mongoose.Document {
   emailVerificationExpires?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
-  consent_agreed: boolean;
+  consent_text: string;
   consent_version: string;
-  consented_at: Date;
+  consent_timestamp: Date;
+  consent_accepted: boolean;
   isThirteenOrOlder: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -59,20 +60,25 @@ const userSchema = new mongoose.Schema<IUser>({
   passwordResetExpires: {
     type: Date,
   },
-  consent_agreed: {
-    type: Boolean,
+  consent_text: {
+    type: String,
     required: true,
-    default: false,
+    default: 'I understand that Next Play Recovery (including the Resource Center) is for informational use only and not medical advice. I agree to the Terms of Use, Privacy Policy, and Disclaimer, consent to the storage of my data (including optional photos), and confirm I am 13 or older (with parent/guardian consent if under 18).',
   },
   consent_version: {
     type: String,
     required: true,
-    default: 'v1-2025-01-16',
+    default: 'v1.0',
   },
-  consented_at: {
+  consent_timestamp: {
     type: Date,
     required: true,
     default: Date.now,
+  },
+  consent_accepted: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
   isThirteenOrOlder: {
     type: Boolean,

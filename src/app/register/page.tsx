@@ -291,7 +291,7 @@ export default function RegisterPage() {
               {formData.isThirteenOrOlder === false && (
                 <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
                   <p className="text-sm text-red-700">
-                    Users under 13 cannot create an account. Please ask a parent/guardian to keep records or contact us.
+                    Sorry, users under 13 cannot create an account on Next Play Recovery. Please ask a parent/guardian to help track injuries or contact us at hello@nextplayrecovery.com.
                   </p>
                 </div>
               )}
@@ -311,14 +311,9 @@ export default function RegisterPage() {
                 />
                 <div className="text-sm text-gray-700">
                   <p>
-                    I understand that Next Play Recovery is for informational use only and does not provide medical advice. 
-                    I consent to the collection and storage of information I enter (including optional photos) for injury tracking and app functionality. 
-                    I understand that anonymized, aggregated data (without names or identifying details) may be used in the future for research to improve athlete health and safety. 
-                    If I am under 18, I confirm I have parent/guardian consent. 
-                    I agree to the{' '}
-                    <Link href="/legal" className="text-blue-600 hover:text-blue-500 underline">
-                      Terms of Use, Privacy Policy, and Disclaimer
-                    </Link>.
+                    ☑️ I understand that Next Play Recovery (including the Resource Center) is for informational use only and not medical advice. 
+                    I agree to the Terms of Use, Privacy Policy, and Disclaimer, consent to the storage of my data (including optional photos), 
+                    and confirm I am 13 or older (with parent/guardian consent if under 18).
                   </p>
                 </div>
               </label>
