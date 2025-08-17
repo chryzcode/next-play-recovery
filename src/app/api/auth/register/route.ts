@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
 
-    const { name, email, password } = await request.json();
+    const { name, email, password, consentAgreed, isThirteenOrOlder } = await request.json();
 
     // Validate input
     if (!name || !email || !password) {
@@ -22,6 +22,21 @@ export async function POST(request: NextRequest) {
     if (password.length < 6) {
       return NextResponse.json(
         { error: 'Password must be at least 6 characters' },
+        { status: 400 }
+      );
+    }
+
+    // Validate consent and age requirements
+    if (!consentAgreed) {
+      return NextResponse.json(
+        { error: 'Consent agreement is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!isThirteenOrOlder) {
+      return NextResponse.json(
+        { error: 'Users must be 13 or older to create an account' },
         { status: 400 }
       );
     }
@@ -42,7 +57,7 @@ export async function POST(request: NextRequest) {
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    // Create user
+    // Create user with consent tracking
     const user = new User({
       name,
       email: email.toLowerCase(),
@@ -51,6 +66,10 @@ export async function POST(request: NextRequest) {
       isEmailVerified: false,
       emailVerificationToken: verificationToken,
       emailVerificationExpires: verificationExpires,
+      consent_agreed: consentAgreed,
+      consent_version: 'v1-2025-01-16',
+      consented_at: new Date(),
+      isThirteenOrOlder: isThirteenOrOlder,
     });
 
     await user.save();

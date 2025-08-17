@@ -317,8 +317,10 @@ export default function NewInjuryPage({ params }: { params: Promise<{ childId: s
                     <div className="text-sm text-yellow-800">
                       <p className="font-medium">Privacy Notice</p>
                       <p className="mt-1">
-                        Photos you upload will be stored securely and used only for injury tracking purposes. 
-                        They will not be shared with third parties without your explicit consent.
+                        Uploads are stored privately. Admins may view for support/maintenance. See{' '}
+                        <Link href="/legal" className="text-blue-600 hover:text-blue-500 underline">
+                          Terms & Privacy
+                        </Link>.
                       </p>
                     </div>
                   </div>

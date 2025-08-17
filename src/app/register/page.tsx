@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function RegisterPage() {
@@ -16,6 +16,8 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    consentAgreed: false,
+    isThirteenOrOlder: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -42,6 +44,14 @@ export default function RegisterPage() {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
+    if (!formData.consentAgreed) {
+      newErrors.consentAgreed = 'You must agree to the terms and consent to continue';
+    }
+
+    if (!formData.isThirteenOrOlder) {
+      newErrors.isThirteenOrOlder = 'You must be 13 or older to create an account';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -61,7 +71,13 @@ export default function RegisterPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          consentAgreed: formData.consentAgreed,
+          isThirteenOrOlder: formData.isThirteenOrOlder,
+        }),
         credentials: 'include'
       });
 
@@ -237,12 +253,83 @@ export default function RegisterPage() {
               </div>
               {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
             </div>
+
+            {/* Age Question */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center mb-3">
+                <AlertTriangle className="h-5 w-5 text-blue-600 mr-2" />
+                <label className="text-sm font-medium text-blue-900">
+                  Are you 13 or older?
+                </label>
+              </div>
+              <div className="space-y-2">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="age"
+                    value="yes"
+                    checked={formData.isThirteenOrOlder === true}
+                    onChange={() => setFormData({ ...formData, isThirteenOrOlder: true })}
+                    className="mr-2 text-blue-600 focus:ring-blue-500"
+                    disabled={isLoading}
+                  />
+                  <span className="text-sm text-blue-800">Yes, I am 13 or older</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="age"
+                    value="no"
+                    checked={formData.isThirteenOrOlder === false}
+                    onChange={() => setFormData({ ...formData, isThirteenOrOlder: false })}
+                    className="mr-2 text-blue-600 focus:ring-blue-500"
+                    disabled={isLoading}
+                  />
+                  <span className="text-sm text-blue-800">No, I am under 13</span>
+                </label>
+              </div>
+              {formData.isThirteenOrOlder === false && (
+                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-sm text-red-700">
+                    Users under 13 cannot create an account. Please ask a parent/guardian to keep records or contact us.
+                  </p>
+                </div>
+              )}
+              {errors.isThirteenOrOlder && <p className="mt-1 text-sm text-red-600">{errors.isThirteenOrOlder}</p>}
+            </div>
+
+            {/* Consent Checkbox */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <label className="flex items-start">
+                <input
+                  type="checkbox"
+                  checked={formData.consentAgreed}
+                  onChange={(e) => setFormData({ ...formData, consentAgreed: e.target.checked })}
+                  className="mt-1 mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  disabled={isLoading}
+                  required
+                />
+                <div className="text-sm text-gray-700">
+                  <p>
+                    I understand that Next Play Recovery is for informational use only and does not provide medical advice. 
+                    I consent to the collection and storage of information I enter (including optional photos) for injury tracking and app functionality. 
+                    I understand that anonymized, aggregated data (without names or identifying details) may be used in the future for research to improve athlete health and safety. 
+                    If I am under 18, I confirm I have parent/guardian consent. 
+                    I agree to the{' '}
+                    <Link href="/legal" className="text-blue-600 hover:text-blue-500 underline">
+                      Terms of Use, Privacy Policy, and Disclaimer
+                    </Link>.
+                  </p>
+                </div>
+              </label>
+              {errors.consentAgreed && <p className="mt-1 text-sm text-red-600">{errors.consentAgreed}</p>}
+            </div>
           </div>
 
           <div>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !formData.isThirteenOrOlder}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Creating Account...' : 'Create Account'}

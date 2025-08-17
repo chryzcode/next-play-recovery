@@ -11,6 +11,10 @@ export interface IUser extends mongoose.Document {
   emailVerificationExpires?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  consent_agreed: boolean;
+  consent_version: string;
+  consented_at: Date;
+  isThirteenOrOlder: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -54,6 +58,26 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   passwordResetExpires: {
     type: Date,
+  },
+  consent_agreed: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  consent_version: {
+    type: String,
+    required: true,
+    default: 'v1-2025-01-16',
+  },
+  consented_at: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+  isThirteenOrOlder: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
 }, {
   timestamps: true,
