@@ -401,7 +401,7 @@ export default function EditInjuryPage() {
                   <div className="text-sm text-yellow-800">
                     <p className="font-medium">Privacy Notice</p>
                     <p className="mt-1">
-                      Uploads are stored privately. Admins may view for support/maintenance. See{' '}
+                      Photos are private and for your use only. Admins may view for support/maintenance. See{' '}
                       <Link href="/legal" className="text-blue-600 hover:text-blue-500 underline">
                         Terms & Privacy
                       </Link>.

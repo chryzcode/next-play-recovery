@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-12">
+    <footer className="bg-gray-900 text-white py-12 mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
@@ -33,7 +33,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="mailto:support@nextplayrecovery.com" className="text-gray-300 hover:text-white transition-colors">
+                <a href="mailto:hello@nextplayrecovery.com" className="text-gray-300 hover:text-white transition-colors">
                   Contact
                 </a>
               </li>
@@ -53,7 +53,7 @@ export default function Footer() {
         <div className="border-t border-gray-700 pt-8">
           <div className="text-center">
             <div className="text-sm text-gray-300 flex flex-col md:flex-row items-center justify-center gap-2">
-              ©️ 2025 Next Play Recovery. For informational use only — not medical advice.{' '}
+              © 2025–Present Next Play Recovery | Informational use only — not medical advice.{' '}
               <Link 
                 href="/legal" 
                 className="text-blue-400 hover:text-blue-300 underline"

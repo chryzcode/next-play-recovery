@@ -5,83 +5,150 @@ export default function LegalPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Legal Information</h1>
-          <p className="text-lg text-gray-600">Terms of Use, Privacy Policy, and Disclaimer</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Next Play Recovery — Terms of Use, Privacy Policy & Disclaimer
+          </h1>
+          <div className="text-lg text-gray-600 space-y-2">
+            <p><strong>Last updated:</strong> August 2025</p>
+            <p><strong>Contact:</strong> hello@nextplayrecovery.com</p>
+          </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-8 space-y-12">
           {/* Terms of Use */}
           <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Terms of Use</h2>
-            <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
-              <p>
-                Welcome to Next Play Recovery. By accessing and using this application, you accept and agree to be bound by the terms and provision of this agreement.
-              </p>
-              <p>
-                <strong>Acceptance of Terms:</strong> By using Next Play Recovery, you agree to these Terms of Use. If you do not agree to these terms, please do not use the application.
-              </p>
-              <p>
-                <strong>Use License:</strong> Permission is granted to temporarily download one copy of the application for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title.
-              </p>
-              <p>
-                <strong>Restrictions:</strong> You may not modify or copy the materials, use the materials for any commercial purpose, attempt to reverse engineer any software contained in the application, or remove any copyright or other proprietary notations from the materials.
-              </p>
-              <p>
-                <strong>User Responsibilities:</strong> You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account.
-              </p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">1. Terms of Use</h2>
+            <div className="prose prose-lg max-w-none text-gray-700 space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Purpose</h3>
+                <p>
+                  Next Play Recovery is a free web app that helps athletes, parents, and coaches log injuries or symptoms, track recovery progress, and access general resources.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Eligibility</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>You must be 13 years or older to create an account.</li>
+                  <li>If you are 13–17 years old, you may use Next Play Recovery only with the knowledge and consent of a parent or guardian.</li>
+                  <li>Children under 13 are not permitted to use the app. If we learn that a user under 13 has created an account, we will delete it promptly.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">User Responsibilities</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>You are responsible for the accuracy of the information you enter.</li>
+                  <li>You agree not to upload content you do not have rights to or attempt to access other users' information.</li>
+                  <li>Parents/guardians are responsible for monitoring the use of the app by minors.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Changes</h3>
+                <p>
+                  We may update features, terms, or policies at any time. Continued use of the app means you accept the updated terms.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Account Termination</h3>
+                <p>
+                  We may suspend or terminate accounts that violate these terms or put user safety at risk.
+                </p>
+              </div>
             </div>
           </section>
 
           {/* Privacy Policy */}
           <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Privacy Policy</h2>
-            <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
-              <p>
-                Next Play Recovery is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information.
-              </p>
-              <p>
-                <strong>Information We Collect:</strong> We collect information you provide directly to us, such as when you create an account, log injuries, or upload photos. This may include your name, email address, and injury-related information.
-              </p>
-              <p>
-                <strong>How We Use Your Information:</strong> We use the information we collect to provide, maintain, and improve our services, communicate with you, and ensure the security of our application.
-              </p>
-              <p>
-                <strong>Data Storage:</strong> Your data is stored securely using industry-standard encryption and security measures. Photos are stored using Cloudinary's secure cloud storage service.
-              </p>
-              <p>
-                <strong>Data Sharing:</strong> We do not sell, trade, or otherwise transfer your personal information to third parties, except as described in this policy or with your explicit consent.
-              </p>
-              <p>
-                <strong>Research and Analytics:</strong> We may use anonymized, aggregated data (without names or identifying details) for research purposes to improve athlete health and safety. This data will never contain personally identifiable information.
-              </p>
-              <p>
-                <strong>Your Rights:</strong> You have the right to access, correct, or delete your personal information. You can also withdraw your consent at any time by contacting us.
-              </p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">2. Privacy Policy</h2>
+            <div className="prose prose-lg max-w-none text-gray-700 space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Information We Collect</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>Data you provide: injury details, recovery notes, sport/activity, date ranges, and optional photos.</li>
+                  <li>Technical data: device/browser information and basic analytics to improve performance.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">How We Use Data</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>To provide the app's core functions (injury logging, recovery tracking, and access to resources).</li>
+                  <li>To maintain and improve features and ensure safety.</li>
+                  <li>Administrators may review user data when needed for support and maintenance.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Research Use</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>We may use anonymized, aggregated data (without names, emails, or identifying details) for research purposes, such as identifying common injury trends or typical recovery timelines.</li>
+                  <li>Any research outputs will not identify individual users.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Photos and Uploaded Content</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>Stored privately and used only for your own tracking and app functionality.</li>
+                  <li>Administrators may view uploads for support and maintenance but will not disclose or publish them without explicit permission.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Minors</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>Users aged 13–17 must have parent/guardian consent to use the app.</li>
+                  <li>Parents/guardians are encouraged to review entries and monitor usage.</li>
+                  <li>Users under 13 are not allowed to create accounts.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Data Protection</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>We take reasonable measures to protect your information.</li>
+                  <li>We do not sell or rent user data.</li>
+                  <li>If you would like your data deleted, please email us at hello@nextplayrecovery.com with the subject line "Data Deletion Request."</li>
+                </ul>
+              </div>
             </div>
           </section>
 
-          {/* Disclaimer */}
+          {/* Medical Disclaimer */}
           <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Disclaimer</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">3. Medical Disclaimer</h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p>
-                <strong>Medical Disclaimer:</strong> Next Play Recovery is for informational use only and does not provide medical advice. The information provided through this application is not intended to be a substitute for professional medical advice, diagnosis, or treatment.
+                Next Play Recovery does not provide medical advice, diagnosis, or treatment. The app, including its Resource Center, is for informational and educational purposes only.
               </p>
               <p>
-                <strong>No Medical Relationship:</strong> Use of this application does not create a doctor-patient relationship. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
-              </p>
-              <p>
-                <strong>Accuracy of Information:</strong> While we strive to provide accurate and up-to-date information, we make no representations or warranties about the accuracy, completeness, or suitability of the information contained in this application.
-              </p>
-              <p>
-                <strong>Limitation of Liability:</strong> In no event shall Next Play Recovery be liable for any damages arising out of the use or inability to use the materials on this application, even if Next Play Recovery or an authorized representative has been notified orally or in writing of the possibility of such damage.
-              </p>
-              <p>
-                <strong>External Links:</strong> This application may contain links to external websites. We are not responsible for the content or privacy practices of these external sites.
+                Any articles, tips, or resources provided within the app are not intended to replace professional medical advice, diagnosis, or treatment. Always seek the advice of a licensed healthcare provider regarding any questions about injuries, symptoms, or medical conditions. Users and parents/guardians are responsible for making appropriate health decisions.
               </p>
             </div>
           </section>
 
+          {/* Limitation of Liability */}
+          <section>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">4. Limitation of Liability</h2>
+            <div className="prose prose-lg max-w-none text-gray-700">
+              <p>
+                To the fullest extent permitted by law, Next Play Recovery and its creators are not liable for any injury, loss, or damages arising from the use of this app or reliance on its content. Your use of the app is at your own risk.
+              </p>
+            </div>
+          </section>
+
+          {/* Acceptance of Terms */}
+          <section>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">5. Acceptance of Terms</h2>
+            <div className="prose prose-lg max-w-none text-gray-700">
+              <p>
+                By creating an account or using the app, you acknowledge that you have read, understood, and agree to these Terms of Use, Privacy Policy, and Disclaimer.
+              </p>
+            </div>
+          </section>
         </div>
 
         <div className="text-center mt-8">
