@@ -311,7 +311,7 @@ export default function RegisterPage() {
                 />
                 <div className="text-sm text-gray-700">
                   <p>
-                    ☑️ I understand that Next Play Recovery (including the Resource Center) is for informational use only and not medical advice. 
+                    I understand that Next Play Recovery (including the Resource Center) is for informational use only and not medical advice. 
                     I agree to the Terms of Use, Privacy Policy, and Disclaimer, consent to the storage of my data (including optional photos), 
                     and confirm I am 13 or older (with parent/guardian consent if under 18).
                   </p>
