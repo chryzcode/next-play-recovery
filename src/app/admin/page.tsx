@@ -81,7 +81,7 @@ export default function AdminDashboardPage() {
 
         if (usersResponse.ok) {
           const usersData = await usersResponse.json();
-          setUsers(usersData);
+          setUsers(usersData.users || []); // Extract users array from response
         }
 
         if (injuriesResponse.ok) {

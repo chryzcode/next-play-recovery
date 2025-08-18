@@ -35,7 +35,8 @@ export default function AdminUsersPage() {
         });
         if (response.ok) {
           const data = await response.json();
-          setUsers(data);
+          console.log('Users API response:', data); // Debug log
+          setUsers(data.users || []); // Extract users array from response
         } else {
           toast.error('Failed to fetch users');
         }
@@ -50,7 +51,7 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, []);
 
-  const filteredUsers = users.filter(user => 
+  const filteredUsers = isLoading ? [] : (users || []).filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -127,7 +128,7 @@ export default function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((userItem) => (
+                {filteredUsers && filteredUsers.length > 0 ? filteredUsers.map((userItem) => (
                   <tr key={userItem._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -181,7 +182,13 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                      No users found
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
